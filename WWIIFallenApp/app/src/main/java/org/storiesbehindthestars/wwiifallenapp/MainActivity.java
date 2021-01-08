@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
@@ -38,17 +39,23 @@ import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.MVPView {
 
+    public final String NAME_OF_STRING_EXTRA = "imageText";
+
     public final int STORAGE_PERMISSION_REQUESTED = 0;
 
+    public final int CHECK_ACCURACY = 4;
     public final int FIND_MATCH = 1;
-    public final int ANALYZE_IMAGE = 2;
-    public final int SELECT_IMAGE = 3;
-    MainPresenter presenter;
 
-//    String result = "IN TESTING MODE";
+    public final int TAKE_PICTURE = 2;
+    public final int SELECT_IMAGE = 3;
+
+
+    MainPresenter presenter;
 
     AppCompatTextView testingTextView;
     private ProgressBar progressBar;
+
+    public String result = "";
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -72,8 +79,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         });
 
-        MaterialButton enterDirectlyButton = new MaterialButton(this);
-        enterDirectlyButton.setText("Enter Name Manually");
+        MaterialButton selectImageButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
+        selectImageButton.setText("Select Image");
+        selectImageButton.setOnClickListener((view)->{
+            presenter.handleSelectImagePressed();
+        });
+
+        MaterialButton enterDirectlyButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
+        enterDirectlyButton.setText("Enter Name");
         enterDirectlyButton.setOnClickListener((view) ->{
             presenter.handleEnterDirectlyPressed();
         });
@@ -82,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         progressBar.setVisibility(View.INVISIBLE);
 
         mainLayout.addView(scanButton);
+        mainLayout.addView(selectImageButton);
         mainLayout.addView(enterDirectlyButton);
         mainLayout.addView(testingTextView);
         mainLayout.addView(progressBar);
@@ -107,19 +121,38 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     //functions relating to what the user sees displayed go in the activity. Otherwise, refer to the presenter.
 
     @Override
-    public void takePhoto(){
+    public void goToCamera(){
+        //TODO: Check for camera permission first!!!
 
+        String fileName = "WWIIFallenMemorial.jpg";
+
+        File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+        String filePath = imageFile.getAbsolutePath();
+
+        Uri imageUri = FileProvider.getUriForFile(
+                this,
+                "org.storiesbehindthestars.wwiifallenapp.provider",
+                imageFile
+        );
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, TAKE_PICTURE);
     }
 
     @Override
     public void goToDirectEntry() {
         Intent intent = new Intent(this, DirectEntryActivity.class);
+        intent.putExtra(NAME_OF_STRING_EXTRA, "");
         startActivityForResult(intent, FIND_MATCH);
 
     }
 
     @Override
-    public void goToCheckAccuracy(){
+    public void goToCheckAccuracy(String imageToTextResult){
+        Intent intent = new Intent(this, DirectEntryActivity.class);
+        intent.putExtra(NAME_OF_STRING_EXTRA, imageToTextResult);
+        startActivityForResult(intent, CHECK_ACCURACY);
 
     }
 
@@ -145,14 +178,39 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
                 //TODO: Need to get Tess image-to-text working
 //                TessAsyncTask task = new TessAsyncTask(this, bitmap);
 //                task.execute(10);
+                //TODO: Until tess is working, using a phoney result
+                result = "Thomas T Takao";
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
+            }
+            goToCheckAccuracy(result);
+
+        }
+
+        //For TAKE_PICTURE
+        //TODO: Can you just combine this with the code above?
+        if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
+//            presenter.handlePictureSelected(currentFilePath);
+            Uri pictureUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
+
+                //TODO: Need to get Tess image-to-text working
+//                TessAsyncTask task = new TessAsyncTask(this, bitmap);
+//                task.execute(10);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            presenter.setOutputFileUri(pictureUri);
-//            presenter.doOCR();
+
+            //TODO: Until tess is working, using a phoney result
+            result = "Thomas T Takao";
 
         }
+
 
         //FOR ANALYZE_IMAGE code
         //if success
@@ -209,6 +267,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             prepareTesseract();
             String result = extractText(bitmap);
 
+            MainActivity activity = activityWeakReference.get();
+            activity.result = result;
+            //TODO: What happens if there is no text found?
+
 //            testingTextView.setText(result);
 
             return "Finished!";
@@ -229,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             if (activity == null || activity.isFinishing()) {
                 return;
             }
-            Toast.makeText(activity, s, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, s, Toast.LENGTH_SHORT).show();
             activity.progressBar.setProgress(0);
             activity.progressBar.setVisibility(View.INVISIBLE);
         }

@@ -34,9 +34,9 @@ public class MainPresenter {
     public interface MVPView{ //functions that it has to have...
 //        String result = null; //FOR TESTING, redo later
 
-        public void takePhoto();
+        public void goToCamera();
         public void goToDirectEntry();
-        public void goToCheckAccuracy();
+        public void goToCheckAccuracy(String imageToTextResult);
 //        public void copyTessDataFiles(String path);
         public void goToPhotos();
     }
@@ -48,37 +48,25 @@ public class MainPresenter {
 
     //Functions relating to the API & image-to text go in the presenter
 
-//    public String handlePhotoTaken(){
-//        return "hello world";
-//    }
-
-    public String getImageText(){
-        return "helloWorld";
-    }
 
     public void setOutputFileUri(Uri outputFileUri) {
         this.outputFileUri = outputFileUri;
     }
 
     public void handleScanPressed(){
-//        view.takePhoto();
+        view.goToCamera();
+        //rest is handled in view.onActivityResult()
+    }
 
-//        getImageText();
-
-//        extractText();
-//        outputFileUri = Uri.parse("storage/emulated/0/Download/90951844_133832664487.jpg"); // fromFile(new File("storage/emulated/0/Download/90951844_133832664487.jpg"));
+    public void handleSelectImagePressed(){
         view.goToPhotos();
-//        view.goToCheckAccuracy();
-//        doOCR();
-
-
-//        return result;
-
+        //rest is handled in view.onActivityResult()
     }
 
     public void handleEnterDirectlyPressed(){
         view.goToDirectEntry();
     }
+
 
 ////from example at: https://stackoverflow.com/questions/7710123/how-can-i-use-tesseract-in-android
 //    private String extractText(Bitmap bitmap) throws Exception{
@@ -130,10 +118,5 @@ public class MainPresenter {
 //            Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
 //        }
 //    }
-
-
-
-
-
-
+    
 }
