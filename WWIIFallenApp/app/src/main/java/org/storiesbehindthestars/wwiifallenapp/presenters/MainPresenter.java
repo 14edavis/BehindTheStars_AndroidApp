@@ -68,6 +68,8 @@ public class MainPresenter {
     }
 
 
+
+
 ////from example at: https://stackoverflow.com/questions/7710123/how-can-i-use-tesseract-in-android
 //    private String extractText(Bitmap bitmap) throws Exception{
 //        TessBaseAPI tessBaseApi = new TessBaseAPI();
@@ -118,5 +120,5 @@ public class MainPresenter {
 //            Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
 //        }
 //    }
-    
+
 }

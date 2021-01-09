@@ -5,11 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -39,23 +41,29 @@ import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.MVPView {
 
+    //names
     public final String NAME_OF_STRING_EXTRA = "imageText";
 
+    //permission requests
     public final int STORAGE_PERMISSION_REQUESTED = 0;
+    public final int CAMERA_PERMISSION_REQUESTED = 1;
 
+    //intent results
     public final int CHECK_ACCURACY = 4;
     public final int FIND_MATCH = 1;
 
     public final int TAKE_PICTURE = 2;
     public final int SELECT_IMAGE = 3;
 
-
+    //presenter
     MainPresenter presenter;
 
+    //components
     AppCompatTextView testingTextView;
     private ProgressBar progressBar;
 
     public String result = "";
+    String filePath;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -120,24 +128,33 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
     //functions relating to what the user sees displayed go in the activity. Otherwise, refer to the presenter.
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    public void goToCamera(){
-        //TODO: Check for camera permission first!!!
+    public void goToCamera() {
+        //Check for camera permission first
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
 
-        String fileName = "WWIIFallenMemorial.jpg";
+            String fileName = "WWIIFallenMemorial.jpg";
 
-        File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
-        String filePath = imageFile.getAbsolutePath();
+            File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+            filePath = imageFile.getAbsolutePath();
 
-        Uri imageUri = FileProvider.getUriForFile(
-                this,
-                "org.storiesbehindthestars.wwiifallenapp.provider",
-                imageFile
-        );
+            Uri imageUri = FileProvider.getUriForFile(
+                    this,
+                    "org.storiesbehindthestars.wwiifallenapp.provider",
+                    imageFile
+            );
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(intent, TAKE_PICTURE);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(intent, TAKE_PICTURE);
+        }
+
+        else { //if no permission, ask
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUESTED);
+        }
+
+
     }
 
     @Override
@@ -164,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_IMAGE);
     }
 
+    //TODO: create readTextFromImage
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -194,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //TODO: Can you just combine this with the code above?
         if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
 //            presenter.handlePictureSelected(currentFilePath);
-            Uri pictureUri = data.getData();
+            Uri pictureUri = Uri.parse(filePath);
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
 
@@ -209,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             //TODO: Until tess is working, using a phoney result
             result = "Thomas T Takao";
 
+            goToCheckAccuracy(result);
         }
 
 
@@ -232,6 +251,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==CAMERA_PERMISSION_REQUESTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            presenter.handleScanPressed();
+            }
+            //TODO: display message
+        }
     }
 
 
