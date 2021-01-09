@@ -2,6 +2,7 @@ package org.storiesbehindthestars.wwiifallenapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.LinearLayout;
@@ -35,6 +36,12 @@ public class DirectEntryActivity extends AppCompatActivity implements DirectEntr
 
         MaterialButton okButton = new MaterialButton(this);
         okButton.setText("Find Memorial");
+        okButton.setOnClickListener((view)->{
+            //TODO: set up actual function
+            Intent intent = new Intent(this, StoriesActivity.class);
+            startActivity(intent);
+
+        });
 
         mainLayout.addView(titleTextView);
         mainLayout.addView(promptTextView);

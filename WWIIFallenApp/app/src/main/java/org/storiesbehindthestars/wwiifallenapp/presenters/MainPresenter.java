@@ -32,12 +32,9 @@ public class MainPresenter {
 
 
     public interface MVPView{ //functions that it has to have...
-//        String result = null; //FOR TESTING, redo later
-
         public void goToCamera();
         public void goToDirectEntry();
         public void goToCheckAccuracy(String imageToTextResult);
-//        public void copyTessDataFiles(String path);
         public void goToPhotos();
     }
 

@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -79,8 +81,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         testingTextView = new AppCompatTextView(this);
         testingTextView.setText("IN TESTING MODE");
 
+        //Params for Buttons
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(24, 0, 24, 0);
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+
+        //Buttons
         MaterialButton scanButton = new MaterialButton(this);
-        scanButton.setText("Scan");
+        scanButton.setText("Take Photo");
+        scanButton.setIconResource(R.drawable.ic_baseline_camera_alt_24); //need a RESOURCE if you want to use a vector drawable
+        scanButton.setLayoutParams(params);
         scanButton.setOnClickListener((view)->{
             presenter.handleScanPressed();
 //            testingTextView.setText(message);
@@ -89,12 +99,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         MaterialButton selectImageButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
         selectImageButton.setText("Select Image");
+        selectImageButton.setIconResource(R.drawable.ic_baseline_insert_photo_24);
+        selectImageButton.setLayoutParams(params);
         selectImageButton.setOnClickListener((view)->{
             presenter.handleSelectImagePressed();
         });
 
         MaterialButton enterDirectlyButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
         enterDirectlyButton.setText("Enter Name");
+        enterDirectlyButton.setIconResource(R.drawable.ic_baseline_edit_24);
+        enterDirectlyButton.setLayoutParams(params);
         enterDirectlyButton.setOnClickListener((view) ->{
             presenter.handleEnterDirectlyPressed();
         });
@@ -102,16 +116,24 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         progressBar = new ProgressBar(this);
         progressBar.setVisibility(View.INVISIBLE);
 
+
+        //add views
         mainLayout.addView(scanButton);
-        mainLayout.addView(selectImageButton);
-        mainLayout.addView(enterDirectlyButton);
+
+        LinearLayout subLayout = new LinearLayout(this);
+        subLayout.setLayoutParams(params);
+        subLayout.addView(selectImageButton);
+        subLayout.addView(enterDirectlyButton);
+        mainLayout.addView(subLayout);
+
         mainLayout.addView(testingTextView);
         mainLayout.addView(progressBar);
 
+        //set view
         setContentView(mainLayout);
 
+        //TODO:tidy up...
         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED); //todo: PUT WHERE THIS MAKES MORE SENSE
-
 
         File file = new File(Environment.getExternalStorageDirectory().toString()+ "/WWIIFallenApp/tessdata/");
         Log.e("file:", file.toString());
@@ -133,6 +155,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     public void goToCamera() {
         //Check for camera permission first
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+
 
             String fileName = "WWIIFallenMemorial.jpg";
 
@@ -147,7 +171,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            startActivityForResult(intent, TAKE_PICTURE);
+            startActivityForResult(intent, TAKE_PICTURE); }
+            else {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED);
+
+            }
         }
 
         else { //if no permission, ask
