@@ -21,6 +21,11 @@ public class Story implements Serializable {
     public String storyText;
 
     @ForeignKey(entity = ApiResource.class, parentColumns = "apiResourceColumn", childColumns = "storyColumn") //related to API call to get a specific story
-    public String apiResource;
+    public String apiResourceFK;
 
+    public void Story(ApiResource apiResource){
+        this.apiResourceFK = apiResource.id;
+
+        //TODO: get story and text from apiResource id, Use API
+    }
 }

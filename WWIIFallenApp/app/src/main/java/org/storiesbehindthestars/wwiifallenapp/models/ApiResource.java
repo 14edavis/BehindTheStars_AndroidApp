@@ -15,5 +15,10 @@ public class ApiResource implements Serializable {
     @PrimaryKey(autoGenerate = false)  //related to API call to get a specific story
     @NonNull
     public String id;
+    //example: https://www.fold3.com/page/91298175/thomas-t-takao //TODO: figure out what format we actually want for the ID
+
+    public void ApiResource(String urlID){
+        this.id = urlID;
+    }
 
 }
