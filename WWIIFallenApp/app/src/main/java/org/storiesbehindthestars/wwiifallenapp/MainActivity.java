@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -24,11 +25,15 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.storiesbehindthestars.wwiifallenapp.presenters.MainPresenter;
@@ -61,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     MainPresenter presenter;
 
     //components
-    AppCompatTextView testingTextView;
     private ProgressBar progressBar;
 
     public String result = "";
@@ -75,11 +79,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         presenter = new MainPresenter(this);
 
+        FrameLayout frameLayout = new FrameLayout(this);
+
         LinearLayout mainLayout = new LinearLayout(this);
         mainLayout.setOrientation(LinearLayout.VERTICAL);
 
-        testingTextView = new AppCompatTextView(this);
-        testingTextView.setText("IN TESTING MODE");
+        //image
+        AppCompatImageView imageView = new AppCompatImageView(this);
+        imageView.setImageResource(R.drawable.sbts_fbpic);
+
+        //text
+        MaterialTextView textView = new MaterialTextView(this, null, R.attr.textAppearanceHeadline5);
+        textView.setText("Read the Stories of the WWII Fallen");
+        textView.setGravity(Gravity.CENTER_HORIZONTAL);
+
 
         //Params for Buttons
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -88,17 +101,15 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         //Buttons
         MaterialButton scanButton = new MaterialButton(this);
-        scanButton.setText("Take Photo");
+        scanButton.setText("Scan a Memorial");
         scanButton.setIconResource(R.drawable.ic_baseline_camera_alt_24); //need a RESOURCE if you want to use a vector drawable
         scanButton.setLayoutParams(params);
         scanButton.setOnClickListener((view)->{
             presenter.handleScanPressed();
-//            testingTextView.setText(message);
-
         });
 
         MaterialButton selectImageButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
-        selectImageButton.setText("Select Image");
+        selectImageButton.setText("Select Photo");
         selectImageButton.setIconResource(R.drawable.ic_baseline_insert_photo_24);
         selectImageButton.setLayoutParams(params);
         selectImageButton.setOnClickListener((view)->{
@@ -113,11 +124,24 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             presenter.handleEnterDirectlyPressed();
         });
 
+        //progressBar
         progressBar = new ProgressBar(this);
         progressBar.setVisibility(View.INVISIBLE);
 
+        //FAB
+        FloatingActionButton fab = new FloatingActionButton(this);
+        fab.setImageResource(R.drawable.ic_baseline_help_24);
+        FrameLayout.LayoutParams fabParams = new MaterialCardView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        fabParams.gravity = (Gravity.RIGHT|Gravity.BOTTOM);
+        fabParams.setMargins(0, 0, 48, 48);
+        fab.setLayoutParams(fabParams);
 
-        //add views
+
+        //add views to mainLayout
+        mainLayout.addView(imageView);
+
+        mainLayout.addView(textView);
+
         mainLayout.addView(scanButton);
 
         LinearLayout subLayout = new LinearLayout(this);
@@ -126,21 +150,24 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         subLayout.addView(enterDirectlyButton);
         mainLayout.addView(subLayout);
 
-        mainLayout.addView(testingTextView);
         mainLayout.addView(progressBar);
 
+        //add views to frameLayout
+        frameLayout.addView(mainLayout);
+        frameLayout.addView(fab);
+
         //set view
-        setContentView(mainLayout);
+        setContentView(frameLayout);
 
 
         //TODO: remove later... just for testing
-        MaterialButton testButton = new MaterialButton(this);
-        testButton.setText("Test Story");
-        testButton.setOnClickListener((view)->{
-            Intent intent = new Intent(this, StoryActivity.class);
-            startActivity(intent);
-        });
-        mainLayout.addView(testButton);
+//        MaterialButton testButton = new MaterialButton(this);
+//        testButton.setText("Test Story");
+//        testButton.setOnClickListener((view)->{
+//            Intent intent = new Intent(this, StoryActivity.class);
+//            startActivity(intent);
+//        });
+//        mainLayout.addView(testButton);
 
 
         //TODO:tidy up...
@@ -335,7 +362,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             activity.result = result;
             //TODO: What happens if there is no text found?
 
-//            testingTextView.setText(result);
 
             return "Finished!";
         }

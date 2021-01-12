@@ -8,6 +8,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -35,33 +36,40 @@ public class MemorialView extends MaterialCardView {
 
     private MaterialButton viewButton;
     private FloatingActionButton fab;
-    private AppCompatImageView imageView;
+    private AppCompatImageView backgroundImageView;
+    private AppCompatImageView profileImageView;
     private MaterialTextView titleView;
 //    private MaterialTextView descriptionView;
     private MaterialTextView contentsView;
-    private LinearLayout header;
+    private FrameLayout header;
     private Story memorial;
     private boolean showFullPost = false;
 
 
-//    public MemorialView(Context context) {
-//        this(context, false);
-//    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public MemorialView(Context context, ApiResource webLinkToStory) {
+        this(context, webLinkToStory,false);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public MemorialView(Context context, ApiResource webLinkToStory, boolean showFullPost){
         super(context);
 
+        //set variables
 //        this.post = post; TODO
         this.showFullPost = showFullPost;
 //        setTag(post.id); TODO
+
+        //Params
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(48, 24, 48, 24);
         setLayoutParams(params);
+
+        //Layout
         LinearLayout mainLayout = new LinearLayout(context);
         mainLayout.setOrientation(LinearLayout.VERTICAL);
-        header = new LinearLayout(context);
-        header.setOrientation(LinearLayout.VERTICAL);
+        header = new FrameLayout(context);
+//        header.setOrientation(LinearLayout.VERTICAL);
         LinearLayout body = new LinearLayout(context);
         body.setPadding(64, 32, 64, 32);
         body.setOrientation(LinearLayout.VERTICAL);
@@ -72,18 +80,21 @@ public class MemorialView extends MaterialCardView {
         mainLayout.addView(footer);
 
         addView(mainLayout);
-        imageView = new AppCompatImageView(context);
 
-//        new Thread(() -> {
-            displayImage();
-//        }).start();
+        //Header
+        backgroundImageView = new AppCompatImageView(context);
+        profileImageView = new AppCompatImageView(context);
+        FrameLayout.LayoutParams profileParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        profileParams.gravity = Gravity.LEFT;
+        profileParams.setMargins(24, 24, 0,0);
+        profileImageView.setLayoutParams(profileParams);
 
-
-        header.addView(imageView);
+        displayImage();
+        header.addView(backgroundImageView);
+        header.addView(profileImageView);
 
 
         //Body
-
         titleView = new MaterialTextView(context, null, R.attr.textAppearanceHeadline6);
         titleView.setText("Title"); //TODO
         body.addView(titleView);
@@ -96,6 +107,8 @@ public class MemorialView extends MaterialCardView {
         contentsView = new MaterialTextView(context);
         contentsView.setText("main content"); //TODO
         body.addView(contentsView);
+
+        //Handling full vs partial post
         if (showFullPost) {
             contentsView.setTextSize(18);
         } else {
@@ -126,10 +139,12 @@ public class MemorialView extends MaterialCardView {
         //Header
 //        if (post.pictureUri.equals("") && showFullPost) {
             LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 320);
-            imageView.setImageResource(R.drawable.ic_baseline_image_640);
+            backgroundImageView.setImageResource(R.drawable.ic_baseline_image_640);
             header.setBackgroundColor(getResources().getColor(R.color.white, null));
-            imageView.setLayoutParams(imageParams);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            backgroundImageView.setLayoutParams(imageParams);
+            backgroundImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            profileImageView.setImageResource(R.drawable.ic_baseline_person_outline_96);
 
             //TODO: If image available
 //        } else if(!post.pictureUri.equals("")) {
