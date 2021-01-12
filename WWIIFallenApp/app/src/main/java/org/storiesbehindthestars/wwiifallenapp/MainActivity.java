@@ -132,6 +132,17 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //set view
         setContentView(mainLayout);
 
+
+        //TODO: remove later... just for testing
+        MaterialButton testButton = new MaterialButton(this);
+        testButton.setText("Test Story");
+        testButton.setOnClickListener((view)->{
+            Intent intent = new Intent(this, StoryActivity.class);
+            startActivity(intent);
+        });
+        mainLayout.addView(testButton);
+
+
         //TODO:tidy up...
         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED); //todo: PUT WHERE THIS MAKES MORE SENSE
 

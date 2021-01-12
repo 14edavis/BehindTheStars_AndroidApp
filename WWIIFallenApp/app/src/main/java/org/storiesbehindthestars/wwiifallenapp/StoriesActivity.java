@@ -22,7 +22,7 @@ public class StoriesActivity extends AppCompatActivity implements StoriesPresent
         mainLayout = new LinearLayout(this);
         presenter = new StoriesPresenter(this);
 
-        MemorialView testMemorial = new MemorialView(this, true);
+        MemorialView testMemorial = new MemorialView(this, null,false);
 
         //Web View -- will probably swap out for something else later...
         final WebView webView = new WebView(this);

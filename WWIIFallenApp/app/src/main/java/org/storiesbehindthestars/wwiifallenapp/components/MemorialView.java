@@ -1,7 +1,10 @@
 package org.storiesbehindthestars.wwiifallenapp.components;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -9,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.android.material.button.MaterialButton;
@@ -20,6 +24,11 @@ import org.storiesbehindthestars.wwiifallenapp.R;
 import org.storiesbehindthestars.wwiifallenapp.models.ApiResource;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 //based off of example component created by: https://github.com/dittonjs
 
 public class MemorialView extends MaterialCardView {
@@ -28,7 +37,7 @@ public class MemorialView extends MaterialCardView {
     private FloatingActionButton fab;
     private AppCompatImageView imageView;
     private MaterialTextView titleView;
-    private MaterialTextView descriptionView;
+//    private MaterialTextView descriptionView;
     private MaterialTextView contentsView;
     private LinearLayout header;
     private Story memorial;
@@ -39,6 +48,7 @@ public class MemorialView extends MaterialCardView {
 //        this(context, false);
 //    }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public MemorialView(Context context, ApiResource webLinkToStory, boolean showFullPost){
         super(context);
 
@@ -63,7 +73,12 @@ public class MemorialView extends MaterialCardView {
 
         addView(mainLayout);
         imageView = new AppCompatImageView(context);
-//        displayImage(); TODO
+
+//        new Thread(() -> {
+            displayImage();
+//        }).start();
+
+
         header.addView(imageView);
 
 
@@ -73,13 +88,13 @@ public class MemorialView extends MaterialCardView {
         titleView.setText("Title"); //TODO
         body.addView(titleView);
 
-        descriptionView = new MaterialTextView(context);
-        descriptionView.setText("blah blah blah..."); //TODO
-        body.addView(descriptionView);
-        descriptionView.setTextSize(18);
+//        descriptionView = new MaterialTextView(context);
+//        descriptionView.setText("blah blah blah..."); //TODO
+//        body.addView(descriptionView);
+//        descriptionView.setTextSize(18);
 
         contentsView = new MaterialTextView(context);
-        contentsView.setText("blah blah blah...blah blah blah...blah blah blah..."); //TODO
+        contentsView.setText("main content"); //TODO
         body.addView(contentsView);
         if (showFullPost) {
             contentsView.setTextSize(18);
@@ -105,24 +120,43 @@ public class MemorialView extends MaterialCardView {
         }
     }
 
-    //TODO: Get displayImage working, need an image
-//    private void displayImage() {
-//        //Header
+    //TODO: Get displayImage working with URL image
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void displayImage() {
+        //Header
 //        if (post.pictureUri.equals("") && showFullPost) {
-//            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 560);
-//            imageView.setImageResource(R.drawable.ic_baseline_photo_size_select_actual_24);
-//            header.setBackgroundColor(getResources().getColor(R.color.colorDarkBackground, null));
-//            imageView.setLayoutParams(imageParams);
-////            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//
+            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 320);
+            imageView.setImageResource(R.drawable.ic_baseline_image_640);
+            header.setBackgroundColor(getResources().getColor(R.color.white, null));
+            imageView.setLayoutParams(imageParams);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            //TODO: If image available
 //        } else if(!post.pictureUri.equals("")) {
 //            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 560);
 //            imageView.setImageURI(Uri.parse(post.pictureUri));
 //            imageView.setLayoutParams(imageParams);
 //            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 //        }
-//    }
+    }
 
+
+    Bitmap bitmapFromUrl(String url) throws java.net.MalformedURLException, java.io.IOException {
+    //see:https://stackoverflow.com/questions/3375166/android-drawable-images-from-url
+        HttpURLConnection connection = (HttpURLConnection)new URL(url) .openConnection();
+        connection.setRequestProperty("User-agent","Mozilla/4.0");
+
+        connection.connect();
+        InputStream input = connection.getInputStream();
+
+        return BitmapFactory.decodeStream(input);
+    }
+
+    //for testing, to force text, TODO fix later
+    public void setText(String name, String story){
+        titleView.setText(name);
+        contentsView.setText(story);
+    }
 
     //TODO Incorporate a Memorial object
 //    public void setBlogPost(BlogPost post) {
