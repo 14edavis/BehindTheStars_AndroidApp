@@ -6,7 +6,7 @@ Development for the Android mobile app for the Stories Behind The Stars project.
 
 This app is intented to be streamline and user-friendly. Below are demo screenshots of how the app will work. Color schemes and other graphic design aspects can change, but these show the general workflow.
 
-The home screen gives 3 options: scan a memorial by taking a photo, select a previously saved photo, or enter a name directly. 
+The home screen gives 3 options: scan a memorial by taking a photo, select a previously saved photo, or enter a name directly. An info icon at the bottom of the screen will over more details about the project.
 
 ![Home Screen](screenshots_v1/HomescreenAndOptions.jpg)
 
