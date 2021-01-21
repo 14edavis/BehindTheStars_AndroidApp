@@ -26,6 +26,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 import org.storiesbehindthestars.wwiifallenapp.MainActivity;
 import org.storiesbehindthestars.wwiifallenapp.R;
+import org.storiesbehindthestars.wwiifallenapp.StoryActivity;
 import org.storiesbehindthestars.wwiifallenapp.models.ApiResource;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 
@@ -33,7 +34,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Scanner;
 
 //based off of example component created by: https://github.com/dittonjs
 
@@ -138,6 +141,10 @@ public class MemorialView extends MaterialCardView {
         if (showFullPost) {
             //TODO: Eventually add an option to bookmark the memorial here
         }
+
+
+        new StoryLoaderAsyncTask().execute();
+
     }
 
     //TODO: Get displayImage working with URL image
@@ -284,6 +291,46 @@ public class MemorialView extends MaterialCardView {
     public void setFabOnClickListener(OnClickListener l) {
         if (fab != null) {
             fab.setOnClickListener(l);
+        }
+    }
+
+
+
+    class StoryLoaderAsyncTask extends AsyncTask<URL, Void, String> {
+        @Override
+        protected String doInBackground(URL... urls){
+            String result = "";
+            try {
+                URL url = new URL ("https://www.fold3.com/page/638791116/karol-a-bauer/stories");
+                Scanner sc = new Scanner(url.openStream());
+                StringBuffer sb = new StringBuffer();
+                while(sc.hasNext()) {
+                    sb.append(sc.next());
+                    //System.out.println(sc.next());
+                }
+                result = sb.toString();
+                System.out.println(result);
+                //Removing the HTML tags
+                result = result.replaceAll("<[^>]*>", "");
+                System.out.println(result);
+                return result;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                result = "Error retrieving story";
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+                result = "Error retrieving story";
+                return result;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+//            StoryActivity.this.memorialView.setText("NAME", result);
+
+            MemorialView.this.setText("Name", result);
         }
     }
 

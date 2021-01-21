@@ -44,48 +44,48 @@ public class StoryActivity extends AppCompatActivity {
 
         setContentView(mainLayout);
 
-        new StoryLoaderAsyncTask().execute();
+//        new StoryLoaderAsyncTask().execute();
 
 
     }
 
 
-    class StoryLoaderAsyncTask extends AsyncTask<URL, Void, String> {
-        @Override
-        protected String doInBackground(URL... urls){
-            String result = "";
-            try {
-                URL url = new URL ("https://www.fold3.com/page/638791116/karol-a-bauer/stories");
-                Scanner sc = new Scanner(url.openStream());
-                StringBuffer sb = new StringBuffer();
-                while(sc.hasNext()) {
-                    sb.append(sc.next());
-                    //System.out.println(sc.next());
-                }
-                result = sb.toString();
-                System.out.println(result);
-                //Removing the HTML tags
-                result = result.replaceAll("<[^>]*>", "");
-                System.out.println(result);
-                return result;
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                result = "Error retrieving story";
-                return result;
-            } catch (IOException e) {
-                e.printStackTrace();
-                result = "Error retrieving story";
-                return result;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            StoryActivity.this.memorialView.setText("NAME", result);
-
-        }
-    }
+//    class StoryLoaderAsyncTask extends AsyncTask<URL, Void, String> {
+//        @Override
+//        protected String doInBackground(URL... urls){
+//            String result = "";
+//            try {
+//                URL url = new URL ("https://www.fold3.com/page/638791116/karol-a-bauer/stories");
+//                Scanner sc = new Scanner(url.openStream());
+//                StringBuffer sb = new StringBuffer();
+//                while(sc.hasNext()) {
+//                    sb.append(sc.next());
+//                    //System.out.println(sc.next());
+//                }
+//                result = sb.toString();
+//                System.out.println(result);
+//                //Removing the HTML tags
+//                result = result.replaceAll("<[^>]*>", "");
+//                System.out.println(result);
+//                return result;
+//
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//                result = "Error retrieving story";
+//                return result;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                result = "Error retrieving story";
+//                return result;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String result) {
+//            StoryActivity.this.memorialView.setText("NAME", result);
+//
+//        }
+//    }
 
 
 }
