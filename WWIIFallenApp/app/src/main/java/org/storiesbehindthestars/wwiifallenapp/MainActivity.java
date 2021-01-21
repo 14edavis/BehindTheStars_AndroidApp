@@ -1,0 +1,520 @@
+package org.storiesbehindthestars.wwiifallenapp;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
+import com.googlecode.tesseract.android.TessBaseAPI;
+
+import org.storiesbehindthestars.wwiifallenapp.presenters.MainPresenter;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.ref.WeakReference;
+
+
+public class MainActivity extends AppCompatActivity implements MainPresenter.MVPView {
+
+    //names
+    public final String NAME_OF_STRING_EXTRA = "imageText";
+
+    //permission requests
+    public final int STORAGE_PERMISSION_REQUESTED = 0;
+    public final int CAMERA_PERMISSION_REQUESTED = 1;
+
+    //intent results
+    public final int CHECK_ACCURACY = 4;
+    public final int FIND_MATCH = 1;
+
+    public final int TAKE_PICTURE = 2;
+    public final int SELECT_IMAGE = 3;
+
+    //presenter
+    MainPresenter presenter;
+
+    //components
+    private ProgressBar progressBar;
+
+    public String result = "";
+    String filePath;
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        presenter = new MainPresenter(this);
+
+        FrameLayout frameLayout = new FrameLayout(this);
+
+        LinearLayout mainLayout = new LinearLayout(this);
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+
+        //image
+        AppCompatImageView imageView = new AppCompatImageView(this);
+        imageView.setImageResource(R.drawable.sbts_fbpic);
+
+        //text
+        MaterialTextView textView = new MaterialTextView(this, null, R.attr.textAppearanceHeadline5);
+        textView.setText("Read the Stories of the WWII Fallen");
+        textView.setGravity(Gravity.CENTER_HORIZONTAL);
+
+
+        //Params for Buttons
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(24, 0, 24, 0);
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+
+        //Buttons
+        MaterialButton scanButton = new MaterialButton(this);
+        scanButton.setText("Scan a Memorial");
+        scanButton.setIconResource(R.drawable.ic_baseline_camera_alt_24); //need a RESOURCE if you want to use a vector drawable
+        scanButton.setLayoutParams(params);
+        scanButton.setOnClickListener((view)->{
+            presenter.handleScanPressed();
+        });
+
+        MaterialButton selectImageButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
+        selectImageButton.setText("Select Photo");
+        selectImageButton.setIconResource(R.drawable.ic_baseline_insert_photo_24);
+        selectImageButton.setLayoutParams(params);
+        selectImageButton.setOnClickListener((view)->{
+            presenter.handleSelectImagePressed();
+        });
+
+        MaterialButton enterDirectlyButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
+        enterDirectlyButton.setText("Enter Name");
+        enterDirectlyButton.setIconResource(R.drawable.ic_baseline_edit_24);
+        enterDirectlyButton.setLayoutParams(params);
+        enterDirectlyButton.setOnClickListener((view) ->{
+            presenter.handleEnterDirectlyPressed();
+        });
+
+        //progressBar
+        progressBar = new ProgressBar(this);
+        progressBar.setVisibility(View.INVISIBLE);
+
+        //FAB
+        FloatingActionButton fab = new FloatingActionButton(this);
+        fab.setImageResource(R.drawable.ic_baseline_help_24);
+        FrameLayout.LayoutParams fabParams = new MaterialCardView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        fabParams.gravity = (Gravity.RIGHT|Gravity.BOTTOM);
+        fabParams.setMargins(0, 0, 48, 48);
+        fab.setLayoutParams(fabParams);
+
+
+        //add views to mainLayout
+        mainLayout.addView(imageView);
+
+        mainLayout.addView(textView);
+
+        mainLayout.addView(scanButton);
+
+        LinearLayout subLayout = new LinearLayout(this);
+        subLayout.setLayoutParams(params);
+        subLayout.addView(selectImageButton);
+        subLayout.addView(enterDirectlyButton);
+        mainLayout.addView(subLayout);
+
+        mainLayout.addView(progressBar);
+
+        //add views to frameLayout
+        frameLayout.addView(mainLayout);
+        frameLayout.addView(fab);
+
+        //set view
+        setContentView(frameLayout);
+
+
+        //TODO: remove later... just for testing
+//        MaterialButton testButton = new MaterialButton(this);
+//        testButton.setText("Test Story");
+//        testButton.setOnClickListener((view)->{
+//            Intent intent = new Intent(this, StoryActivity.class);
+//            startActivity(intent);
+//        });
+//        mainLayout.addView(testButton);
+
+
+        //TODO:tidy up...
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED); //todo: PUT WHERE THIS MAKES MORE SENSE
+
+        File file = new File(Environment.getExternalStorageDirectory().toString()+ "/WWIIFallenApp/tessdata/");
+        Log.e("file:", file.toString());
+//        try {
+//            file.createNewFile();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        if(!file.exists()) {
+//            Toast.makeText(getApplicationContext(),"Directory does not exist, create it",
+//                    Toast.LENGTH_LONG).show();
+//        }
+    }
+
+    //functions relating to what the user sees displayed go in the activity. Otherwise, refer to the presenter.
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void goToCamera() {
+        //Check for camera permission first
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+
+
+            String fileName = "WWIIFallenMemorial.jpg";
+
+            File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+            filePath = imageFile.getAbsolutePath();
+
+            Uri imageUri = FileProvider.getUriForFile(
+                    this,
+                    "org.storiesbehindthestars.wwiifallenapp.provider",
+                    imageFile
+            );
+
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(intent, TAKE_PICTURE); }
+            else {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED);
+
+            }
+        }
+
+        else { //if no permission, ask
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUESTED);
+        }
+
+
+    }
+
+    @Override
+    public void goToDirectEntry() {
+        Intent intent = new Intent(this, DirectEntryActivity.class);
+        intent.putExtra(NAME_OF_STRING_EXTRA, "");
+        startActivityForResult(intent, FIND_MATCH);
+
+    }
+
+    @Override
+    public void goToCheckAccuracy(String imageToTextResult){
+        Intent intent = new Intent(this, DirectEntryActivity.class);
+        intent.putExtra(NAME_OF_STRING_EXTRA, imageToTextResult);
+        startActivityForResult(intent, CHECK_ACCURACY);
+
+    }
+
+    @Override
+    public void goToPhotos() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_IMAGE);
+    }
+
+    //TODO: create readTextFromImage
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //FOR PICK PICTURE
+        if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
+            Uri pictureUri = data.getData();
+            try {
+                //solution from: https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
+
+                //TODO: Need to get Tess image-to-text working
+//                TessAsyncTask task = new TessAsyncTask(this, bitmap);
+//                task.execute(10);
+                //TODO: Until tess is working, using a phoney result
+                result = "Thomas T Takao";
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
+            }
+            goToCheckAccuracy(result);
+
+        }
+
+        //For TAKE_PICTURE
+        //TODO: Can you just combine this with the code above?
+        if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
+//            presenter.handlePictureSelected(currentFilePath);
+            Uri pictureUri = Uri.parse(filePath);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
+
+                //TODO: Need to get Tess image-to-text working
+//                TessAsyncTask task = new TessAsyncTask(this, bitmap);
+//                task.execute(10);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //TODO: Until tess is working, using a phoney result
+            result = "Thomas T Takao";
+
+            goToCheckAccuracy(result);
+        }
+
+
+        //FOR ANALYZE_IMAGE code
+        //if success
+
+        //if no text found
+
+        //otherwise, if failure
+
+
+        //FOR FIND_MATCH requestCode...
+        //if it found a single match, display the story
+
+        //if it found multiple matches, display a stories list
+
+        //if it the search failed, show a failure message (on the stories page?)
+
+    }
+
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==CAMERA_PERMISSION_REQUESTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            presenter.handleScanPressed();
+            }
+            //TODO: display message
+        }
+    }
+
+
+//based on: https://codinginflow.com/tutorials/android/asynctask
+    private static class TessAsyncTask extends AsyncTask<Integer, Integer, String> {
+        private static final String TESSDATA = "tessdata";
+        private Bitmap bitmap;
+        private TessBaseAPI tessBaseApi;
+        private static final String lang = "eng";
+
+        private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString()+ "/TesseractSample/";
+        private static final String TAG = MainActivity.class.getSimpleName();
+
+        private WeakReference<MainActivity> activityWeakReference;
+
+        TessAsyncTask(MainActivity activity, Bitmap bitmap) {
+            activityWeakReference = new WeakReference<MainActivity>(activity);
+            this.bitmap = bitmap;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            MainActivity activity = activityWeakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
+            activity.progressBar.setVisibility(View.VISIBLE);
+        }
+        @Override
+        protected String doInBackground(Integer... integers) {
+
+            //PUT ACTION HERE
+            prepareTesseract();
+            String result = extractText(bitmap);
+
+            MainActivity activity = activityWeakReference.get();
+            activity.result = result;
+            //TODO: What happens if there is no text found?
+
+
+            return "Finished!";
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            MainActivity activity = activityWeakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
+            activity.progressBar.setProgress(values[0]);
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            MainActivity activity = activityWeakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
+//            Toast.makeText(activity, s, Toast.LENGTH_SHORT).show();
+            activity.progressBar.setProgress(0);
+            activity.progressBar.setVisibility(View.INVISIBLE);
+        }
+
+        //TESS STUFF
+
+        // FROM: https://github.com/ashomokdev/Tess-two_example/blob/master/app/src/main/java/com/ashomok/tesseractsample/MainActivity.java
+
+        //    public void doOCR() {
+        //        prepareTesseract();
+        //        startOCR(outputFileUri);
+        //    }
+
+        /**
+         * Prepare directory on external storage
+         *
+         * @param path
+         * @throws Exception
+         */
+        private void prepareDirectory(String path) {
+
+            File dir = new File(path);
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
+                    Log.e(TAG, "ERROR: Creation of directory " + path + " failed, check does Android Manifest have permission to write to external storage.");
+                }
+            } else {
+                Log.i(TAG, "Created directory " + path);
+            }
+        }
+
+
+        public void prepareTesseract() {
+            try {
+                prepareDirectory(DATA_PATH + TESSDATA);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            copyTessDataFiles(TESSDATA);
+        }
+
+        /**
+         * don't run this code in main thread - it stops UI thread. Create AsyncTask instead.
+         * http://developer.android.com/intl/ru/reference/android/os/AsyncTask.html
+         *
+         * @param imgUri
+         */
+    //    private void startOCR(Uri imgUri) {
+    //        try {
+    //            BitmapFactory.Options options = new BitmapFactory.Options();
+    //            options.inSampleSize = 4; // 1 - means max size. 4 - means maxsize/4 size. Don't use value <4, because you need more memory in the heap to store your data.
+    //            Bitmap bitmap = BitmapFactory.decodeFile(imgUri.getPath(), options);
+    //
+    //            result = extractText(bitmap);
+    //            result = "testing! ...";
+    //
+    ////            textView.setText(result); TODO: THIS!
+    //
+    //        } catch (Exception e) {
+    //            Log.e(TAG, e.getMessage());
+    //        }
+    //    }
+
+
+        public String extractText(Bitmap bitmap) {
+            try {
+                tessBaseApi = new TessBaseAPI();
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+                if (tessBaseApi == null) {
+                    Log.e(TAG, "TessBaseAPI is null. TessFactory not returning tess object.");
+                }
+            }
+
+            tessBaseApi.init(DATA_PATH, lang);  //TODO: for some reason it crashes here. It says that the file path does not exist.
+
+    //       //EXTRA SETTINGS
+    //        //For example if we only want to detect numbers
+    //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
+    //
+    //        //blackList Example
+    //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
+    //                "YTRWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
+
+            Log.d(TAG, "Training file loaded");
+            tessBaseApi.setImage(bitmap);
+            String extractedText = "empty result";
+            try {
+                extractedText = tessBaseApi.getUTF8Text();
+            } catch (Exception e) {
+                Log.e(TAG, "Error in recognizing text.");
+            }
+            tessBaseApi.end();
+            return extractedText;
+        }
+
+    public void copyTessDataFiles(String path) {
+        MainActivity activity = activityWeakReference.get();
+        try {
+            String fileList[] = activity.getAssets().list(path);
+
+            for (String fileName : fileList) {
+
+                // open file within the assets folder
+                // if it is not already there copy it to the sdcard
+                String pathToDataFile = DATA_PATH + path + "/" + fileName;
+                if (!(new File(pathToDataFile)).exists()) {
+
+                    InputStream in = activity.getAssets().open(path + "/" + fileName);
+
+                    OutputStream out = new FileOutputStream(pathToDataFile);
+
+                    // Transfer bytes from in to out
+                    byte[] buf = new byte[1024];
+                    int len;
+
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                    in.close();
+                    out.close();
+
+                    Log.d(TAG, "Copied " + fileName + "to tessdata");
+                }
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
+        }
+    }
+    }
+
+
+
+}
+
