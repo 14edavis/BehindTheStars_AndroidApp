@@ -3,16 +3,22 @@ package org.storiesbehindthestars.wwiifallenapp;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.google.android.material.button.MaterialButton;
-
 import org.storiesbehindthestars.wwiifallenapp.components.MemorialView;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Scanner;
+
 public class StoryActivity extends AppCompatActivity {
+    MemorialView memorialView;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -25,7 +31,7 @@ public class StoryActivity extends AppCompatActivity {
         LinearLayout mainLayout = new LinearLayout(this);
 
         ScrollView scrollView = new ScrollView(this);
-        MemorialView memorialView = new MemorialView(this, null, true);
+        memorialView = new MemorialView(this, null, true);
 
         //hardcoded for testing TODO fix later
         String name = "Thomas T Takao";
@@ -38,6 +44,48 @@ public class StoryActivity extends AppCompatActivity {
 
         setContentView(mainLayout);
 
+        new StoryLoaderAsyncTask().execute();
+
+
     }
+
+
+    class StoryLoaderAsyncTask extends AsyncTask<URL, Void, String> {
+        @Override
+        protected String doInBackground(URL... urls){
+            String result = "";
+            try {
+                URL url = new URL ("https://www.fold3.com/page/638791116/karol-a-bauer/stories");
+                Scanner sc = new Scanner(url.openStream());
+                StringBuffer sb = new StringBuffer();
+                while(sc.hasNext()) {
+                    sb.append(sc.next());
+                    //System.out.println(sc.next());
+                }
+                result = sb.toString();
+                System.out.println(result);
+                //Removing the HTML tags
+                result = result.replaceAll("<[^>]*>", "");
+                System.out.println(result);
+                return result;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                result = "Error retrieving story";
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+                result = "Error retrieving story";
+                return result;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            StoryActivity.this.memorialView.setText("NAME", result);
+
+        }
+    }
+
 
 }

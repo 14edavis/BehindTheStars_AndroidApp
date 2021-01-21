@@ -154,8 +154,8 @@ public class MemorialView extends MaterialCardView {
             profileImageView.setImageResource(R.drawable.ic_baseline_person_outline_96);
 
 
-            ImageLoaderAsyncTask asyncTask = new ImageLoaderAsyncTask(profileImage, profileImageView, "testing");
-            asyncTask.execute();
+//            ImageLoaderAsyncTask asyncTask = new ImageLoaderAsyncTask(profileImage, profileImageView, "testing");
+//            asyncTask.execute();
 //            profileImageView.setImageDrawable(profileImage);
 
             //TODO: move to own function?
@@ -225,29 +225,29 @@ public class MemorialView extends MaterialCardView {
 
 
 
-    private static class DisplayImagesAsyncTask extends AsyncTask{
-        MemorialView memorialView;
-        DisplayImagesAsyncTask(MemorialView memorialView){
-            this.memorialView = memorialView;
-            }
-
-        protected Drawable doInBackground(Object[] objects) {
-            InputStream content = null;
-            try {
-                URL url = new URL("https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
-                content = (InputStream) url.getContent();
-                Drawable profileImage = Drawable.createFromStream(content, "src");
-//                imageView.setImageDrawable(profileImage);
-                memorialView.profileImageView.setImageDrawable(profileImage);
-                memorialView.invalidate();
-                return profileImage;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-    }
+//    private static class DisplayImagesAsyncTask extends AsyncTask{
+//        MemorialView memorialView;
+//        DisplayImagesAsyncTask(MemorialView memorialView){
+//            this.memorialView = memorialView;
+//            }
+//
+//        protected Drawable doInBackground(Object[] objects) {
+//            InputStream content = null;
+//            try {
+//                URL url = new URL("https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
+//                content = (InputStream) url.getContent();
+//                Drawable profileImage = Drawable.createFromStream(content, "src");
+////                imageView.setImageDrawable(profileImage);
+//                memorialView.profileImageView.setImageDrawable(profileImage);
+//                memorialView.invalidate();
+//                return profileImage;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return null;
+//        }
+//    }
 
 
     Bitmap bitmapFromUrl(String url) throws java.net.MalformedURLException, java.io.IOException {
