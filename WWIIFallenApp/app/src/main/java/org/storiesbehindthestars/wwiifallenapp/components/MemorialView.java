@@ -1,11 +1,9 @@
 package org.storiesbehindthestars.wwiifallenapp.components;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.text.TextUtils;
@@ -24,9 +22,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
-import org.storiesbehindthestars.wwiifallenapp.MainActivity;
 import org.storiesbehindthestars.wwiifallenapp.R;
-import org.storiesbehindthestars.wwiifallenapp.StoryActivity;
 import org.storiesbehindthestars.wwiifallenapp.models.ApiResource;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 
@@ -52,8 +48,6 @@ public class MemorialView extends MaterialCardView {
     private FrameLayout header;
     private Story memorial;
     private boolean showFullPost = false;
-
-    private Drawable profileImage;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -103,7 +97,6 @@ public class MemorialView extends MaterialCardView {
         header.addView(backgroundImageView);
         header.addView(profileImageView);
 
-
         //Body
         titleView = new MaterialTextView(context, null, R.attr.textAppearanceHeadline6);
         titleView.setText("Title"); //TODO
@@ -142,8 +135,10 @@ public class MemorialView extends MaterialCardView {
             //TODO: Eventually add an option to bookmark the memorial here
         }
 
+        //Pull from web...
+        new TextLoaderAsyncTask().execute();
+        new ImageLoaderAsyncTask().execute();
 
-        new StoryLoaderAsyncTask().execute();
 
     }
 
@@ -159,120 +154,15 @@ public class MemorialView extends MaterialCardView {
             backgroundImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             profileImageView.setImageResource(R.drawable.ic_baseline_person_outline_96);
-
-
-//            ImageLoaderAsyncTask asyncTask = new ImageLoaderAsyncTask(profileImage, profileImageView, "testing");
-//            asyncTask.execute();
-//            profileImageView.setImageDrawable(profileImage);
-
-            //TODO: move to own function?
-//            new Thread(() -> {
-//                    ImageView iv = profileImageView;
-//                    InputStream content = null;
-//                    try {
-//                        URL url = new URL("https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
-//                        content = (InputStream) url.getContent();
-//                        profileImage = Drawable.createFromStream(content, "src");
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//            }).start();
-//
-//            if (profileImage != null) {
-//                profileImageView.setImageDrawable(profileImage);
-//            }
-
-            //TODO: If image available
-//        } else if(!post.pictureUri.equals("")) {
-//            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 560);
-//            imageView.setImageURI(Uri.parse(post.pictureUri));
-//            imageView.setLayoutParams(imageParams);
-//            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//        }
     }
 
-
-    //ASYNC TASK so I can look up URL off main thread TODO: How to load image once you've retrieved it???
-    private static class ImageLoaderAsyncTask extends AsyncTask {
-        private WeakReference<ImageView> imageViewWeakReference;
-        String urlString;
-        ImageView imageView;
-//        WeakReference<Activity> activityWeakReference;
-        Drawable imageToLoad;
-
-        ImageLoaderAsyncTask(Drawable imageToLoad, ImageView imageView, String urlString) {
-//            imageViewWeakReference = new WeakReference<ImageView>(imageView);
-//            activityWeakReference = new WeakReference<Activity>((Activity) context);
-            this.urlString = urlString;
-            this.imageView = imageView;
-            this.imageToLoad = imageToLoad;
-        }
-        protected void onPreExecute() {}
-        @Override
-        protected Drawable doInBackground(Object[] objects) {
-            InputStream content = null;
-            try {
-                URL url = new URL("https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
-                content = (InputStream) url.getContent();
-                Drawable profileImage = Drawable.createFromStream(content, "src");
-//                imageView.setImageDrawable(profileImage);
-                imageToLoad = profileImage;
-                return profileImage;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-                }
-        }
-    protected void onProgressUpdate() {}
-    protected void onPostExecute(Drawable imageToLoad){
-//            imageViewWeakReference.
-//        imageView.setImageDrawable(imageToLoad);
-        }
-    }
-
-
-
-//    private static class DisplayImagesAsyncTask extends AsyncTask{
-//        MemorialView memorialView;
-//        DisplayImagesAsyncTask(MemorialView memorialView){
-//            this.memorialView = memorialView;
-//            }
-//
-//        protected Drawable doInBackground(Object[] objects) {
-//            InputStream content = null;
-//            try {
-//                URL url = new URL("https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
-//                content = (InputStream) url.getContent();
-//                Drawable profileImage = Drawable.createFromStream(content, "src");
-////                imageView.setImageDrawable(profileImage);
-//                memorialView.profileImageView.setImageDrawable(profileImage);
-//                memorialView.invalidate();
-//                return profileImage;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            return null;
-//        }
-//    }
-
-
-    Bitmap bitmapFromUrl(String url) throws java.net.MalformedURLException, java.io.IOException {
-    //see:https://stackoverflow.com/questions/3375166/android-drawable-images-from-url
-        HttpURLConnection connection = (HttpURLConnection)new URL(url) .openConnection();
-        connection.setRequestProperty("User-agent","Mozilla/4.0");
-
-        connection.connect();
-        InputStream input = connection.getInputStream();
-
-        return BitmapFactory.decodeStream(input);
-    }
 
     //for testing, to force text, TODO fix later
     public void setText(String name, String story){
         titleView.setText(name);
         contentsView.setText(story);
     }
+
 
     //TODO Incorporate a Memorial object
 //    public void setBlogPost(BlogPost post) {
@@ -294,12 +184,11 @@ public class MemorialView extends MaterialCardView {
         }
     }
 
-
-
-    class StoryLoaderAsyncTask extends AsyncTask<URL, Void, String> {
+    /** FOR LOADING AND SETTING TEXT **/
+    class TextLoaderAsyncTask extends AsyncTask<URL, Void, String[]> {
         @Override
-        protected String doInBackground(URL... urls){
-            String result = "";
+        protected String[] doInBackground(URL... urls){
+            String[] result = new String[2]; //name and story
             try {
                 URL url = new URL ("https://www.fold3.com/page/638791116/karol-a-bauer/stories");
                 Scanner sc = new Scanner(url.openStream());
@@ -308,31 +197,69 @@ public class MemorialView extends MaterialCardView {
                     sb.append(sc.next());
                     //System.out.println(sc.next());
                 }
-                result = sb.toString();
-                System.out.println(result);
+                String story = sb.toString();
+
                 //Removing the HTML tags
-                result = result.replaceAll("<[^>]*>", "");
-                System.out.println(result);
+                story = story.replaceAll("<[^>]*>", ""); //TODO: Place holder
+
+                String name = "<NAME>"; //TODO: Place holder
+
+                result[0] = name;
+                result[1] = story;
+
                 return result;
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                result = "Error retrieving story";
+                result[0] = "<NAME>";
+                result[1] = "Error retrieving story";
                 return result;
             } catch (IOException e) {
                 e.printStackTrace();
-                result = "Error retrieving story";
+                result[0] = "<NAME>";
+                result[1] = "Error retrieving story";
                 return result;
             }
         }
 
         @Override
-        protected void onPostExecute(String result) {
-//            StoryActivity.this.memorialView.setText("NAME", result);
-
-            MemorialView.this.setText("Name", result);
+        protected void onPostExecute(String[] result) {
+            MemorialView.this.titleView.setText(result[0]);
+            MemorialView.this.contentsView.setText(result[1]);
         }
     }
 
+    /** FOR LOADING AND SETTING IMAGES **/
+    class ImageLoaderAsyncTask extends AsyncTask<URL, Void, Drawable[]> {
+        @Override
+        protected Drawable[] doInBackground(URL... urls) {
+            InputStream content = null;
+            InputStream content2 = null;
+
+            try {
+                URL url = new URL("https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
+                content = (InputStream) url.getContent();
+                Drawable profileImage = Drawable.createFromStream(content, "src");
+
+                URL url2 = new URL("https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941");
+                content2 = (InputStream) url2.getContent();
+                Drawable backgroundImage = Drawable.createFromStream(content2, "src");
+
+                return new Drawable[]{profileImage, backgroundImage};
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+                }
+        }
+
+        @Override
+        protected void onPostExecute(Drawable[] drawables) {
+            if (drawables != null){
+                MemorialView.this.profileImageView.setImageDrawable(drawables[0]);
+                MemorialView.this.backgroundImageView.setImageDrawable(drawables[1]);
+            }
+        }
+    }
 
 }
