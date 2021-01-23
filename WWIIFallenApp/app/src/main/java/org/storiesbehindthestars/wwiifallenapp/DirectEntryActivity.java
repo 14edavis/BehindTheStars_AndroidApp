@@ -2,6 +2,7 @@ package org.storiesbehindthestars.wwiifallenapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -15,6 +16,7 @@ import org.storiesbehindthestars.wwiifallenapp.presenters.DirectEntryPresenter;
 
 public class DirectEntryActivity extends AppCompatActivity implements DirectEntryPresenter.MVPView {
 
+    DirectEntryPresenter presenter;
     TextInputEditText input;
 
     //Functions as both a Direct Input page and a Check Accuracy page
@@ -22,6 +24,8 @@ public class DirectEntryActivity extends AppCompatActivity implements DirectEntr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        presenter = new DirectEntryPresenter(this);
 
         LinearLayout mainLayout = new LinearLayout(this);
         mainLayout.setOrientation(LinearLayout.VERTICAL);
@@ -37,10 +41,7 @@ public class DirectEntryActivity extends AppCompatActivity implements DirectEntr
         MaterialButton okButton = new MaterialButton(this);
         okButton.setText("Find Memorial");
         okButton.setOnClickListener((view)->{
-            //TODO: set up actual function
-            Intent intent = new Intent(this, StoriesActivity.class);
-            startActivity(intent);
-
+            presenter.handleOkButtonPressed(input.getText().toString());
         });
 
         mainLayout.addView(titleTextView);
@@ -59,6 +60,20 @@ public class DirectEntryActivity extends AppCompatActivity implements DirectEntr
             input.setText(text);
         }
 
-
     }
+
+    public void goBack(String inputText) {
+        if (inputText == null || inputText.equals("")) {
+            setResult(Activity.RESULT_CANCELED, null);
+        } else {
+            Intent intent = new Intent();
+            intent.putExtra("result", inputText);
+            setResult(Activity.RESULT_OK, intent);
+        }
+        finish();
+    }
+
+
+
+
 }

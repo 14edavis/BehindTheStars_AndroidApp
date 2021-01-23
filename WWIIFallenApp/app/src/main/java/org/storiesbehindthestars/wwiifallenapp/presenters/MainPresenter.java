@@ -36,6 +36,7 @@ public class MainPresenter {
         public void goToDirectEntry();
         public void goToCheckAccuracy(String imageToTextResult);
         public void goToPhotos();
+        public void setResult(String result);
     }
 
     public MainPresenter(MainActivity view){
@@ -61,8 +62,15 @@ public class MainPresenter {
     }
 
     public void handleEnterDirectlyPressed(){
+
         view.goToDirectEntry();
     }
+
+    public void readImageText(Bitmap bitmap){
+        view.setResult("Thomas T Takao"); //TODO: Place holder result
+    }
+
+
 
 
 

@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     //intent results
     public final int CHECK_ACCURACY = 4;
     public final int FIND_MATCH = 1;
-
     public final int TAKE_PICTURE = 2;
     public final int SELECT_IMAGE = 3;
 
@@ -68,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     //components
     private ProgressBar progressBar;
 
+    //TODO: Do we need these?
     public String result = "";
     String filePath;
 
@@ -127,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //progressBar
         progressBar = new ProgressBar(this);
         progressBar.setVisibility(View.INVISIBLE);
+        FrameLayout.LayoutParams progressParams = new MaterialCardView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        progressParams.gravity = (Gravity.CENTER_HORIZONTAL| Gravity.CENTER_VERTICAL);
+        progressBar.setLayoutParams(progressParams);
 
         //FAB
         FloatingActionButton fab = new FloatingActionButton(this);
@@ -150,11 +153,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         subLayout.addView(enterDirectlyButton);
         mainLayout.addView(subLayout);
 
-        mainLayout.addView(progressBar);
 
         //add views to frameLayout
         frameLayout.addView(mainLayout);
         frameLayout.addView(fab);
+        frameLayout.addView(progressBar);
 
         //set view
         setContentView(frameLayout);
@@ -194,25 +197,23 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //Check for camera permission first
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                //Prep to save picture
+                String fileName = "WWIIFallenMemorial.jpg";
 
+                File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+                filePath = imageFile.getAbsolutePath();
 
-            String fileName = "WWIIFallenMemorial.jpg";
-
-            File imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
-            filePath = imageFile.getAbsolutePath();
-
-            Uri imageUri = FileProvider.getUriForFile(
+                Uri imageUri = FileProvider.getUriForFile(
                     this,
                     "org.storiesbehindthestars.wwiifallenapp.provider",
                     imageFile
-            );
+                );
 
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            startActivityForResult(intent, TAKE_PICTURE); }
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, TAKE_PICTURE); }
             else {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED);
-
             }
         }
 
@@ -223,20 +224,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
     }
 
+    //TODO: Do these intents actually have to be different? Probably not
     @Override
     public void goToDirectEntry() {
         Intent intent = new Intent(this, DirectEntryActivity.class);
         intent.putExtra(NAME_OF_STRING_EXTRA, "");
         startActivityForResult(intent, FIND_MATCH);
-
     }
+
 
     @Override
     public void goToCheckAccuracy(String imageToTextResult){
         Intent intent = new Intent(this, DirectEntryActivity.class);
         intent.putExtra(NAME_OF_STRING_EXTRA, imageToTextResult);
         startActivityForResult(intent, CHECK_ACCURACY);
-
     }
 
     @Override
@@ -247,7 +248,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_IMAGE);
     }
 
-    //TODO: create readTextFromImage
+    public void setResult(String result) {
+        this.result = result;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -258,41 +262,25 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             try {
                 //solution from: https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
-
-                //TODO: Need to get Tess image-to-text working
-//                TessAsyncTask task = new TessAsyncTask(this, bitmap);
-//                task.execute(10);
-                //TODO: Until tess is working, using a phoney result
-                result = "Thomas T Takao";
-
-
+                presenter.readImageText(bitmap); //TODO: Need to get Tess image-to-text working
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
             }
-            goToCheckAccuracy(result);
 
+            goToCheckAccuracy(result);
         }
 
         //For TAKE_PICTURE
-        //TODO: Can you just combine this with the code above?
         if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
-//            presenter.handlePictureSelected(currentFilePath);
             Uri pictureUri = Uri.parse(filePath);
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
-
-                //TODO: Need to get Tess image-to-text working
-//                TessAsyncTask task = new TessAsyncTask(this, bitmap);
-//                task.execute(10);
-
+                presenter.readImageText(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
             }
-
-            //TODO: Until tess is working, using a phoney result
-            result = "Thomas T Takao";
-
             goToCheckAccuracy(result);
         }
 
