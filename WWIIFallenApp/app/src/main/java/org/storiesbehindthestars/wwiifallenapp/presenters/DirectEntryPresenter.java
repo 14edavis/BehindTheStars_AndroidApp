@@ -1,6 +1,9 @@
 package org.storiesbehindthestars.wwiifallenapp.presenters;
 
+import android.content.Intent;
+
 import org.storiesbehindthestars.wwiifallenapp.DirectEntryActivity;
+import org.storiesbehindthestars.wwiifallenapp.StoriesActivity;
 
 public class DirectEntryPresenter {
     MVPView view;

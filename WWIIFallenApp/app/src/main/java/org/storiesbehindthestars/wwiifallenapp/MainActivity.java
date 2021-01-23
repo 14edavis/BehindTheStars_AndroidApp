@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
@@ -14,7 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -36,6 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.storiesbehindthestars.wwiifallenapp.models.Story;
 import org.storiesbehindthestars.wwiifallenapp.presenters.MainPresenter;
 
 import java.io.File;
@@ -50,13 +49,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
     //names
     public final String NAME_OF_STRING_EXTRA = "imageText";
+    public final String STORIES_EXTRA = "searchResults";
 
     //permission requests
     public final int STORAGE_PERMISSION_REQUESTED = 0;
     public final int CAMERA_PERMISSION_REQUESTED = 1;
 
     //intent results
-    public final int CHECK_ACCURACY = 4;
+    public final int GET_TEXT_FOR_SEARCH = 4;
     public final int FIND_MATCH = 1;
     public final int TAKE_PICTURE = 2;
     public final int SELECT_IMAGE = 3;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     private ProgressBar progressBar;
 
     //TODO: Do we need these?
-    public String result = "";
+    public String resultOfTextToImage = "";
     String filePath;
 
 
@@ -224,20 +224,26 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
     }
 
-    //TODO: Do these intents actually have to be different? Probably not
+
     @Override
     public void goToDirectEntry() {
-        Intent intent = new Intent(this, DirectEntryActivity.class);
-        intent.putExtra(NAME_OF_STRING_EXTRA, "");
-        startActivityForResult(intent, FIND_MATCH);
+//        Intent intent = new Intent(this, DirectEntryActivity.class);
+//        intent.putExtra(NAME_OF_STRING_EXTRA, "");
+//        startActivityForResult(intent, GET_TEXT_FOR_SEARCH);
+        goToDirectEntry("");
     }
 
-
     @Override
-    public void goToCheckAccuracy(String imageToTextResult){
+    public void goToDirectEntry(String imageToTextResult){
         Intent intent = new Intent(this, DirectEntryActivity.class);
         intent.putExtra(NAME_OF_STRING_EXTRA, imageToTextResult);
-        startActivityForResult(intent, CHECK_ACCURACY);
+        startActivityForResult(intent, GET_TEXT_FOR_SEARCH);
+    }
+
+    public void goToStories(Story[] stories){
+        Intent intent = new Intent(this, StoriesActivity.class);
+        intent.putExtra(STORIES_EXTRA, stories);
+        startActivity(intent);
     }
 
     @Override
@@ -248,8 +254,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_IMAGE);
     }
 
-    public void setResult(String result) {
-        this.result = result;
+    public void setResultOfTextToImage(String resultOfTextToImage) {
+        this.resultOfTextToImage = resultOfTextToImage;
     }
 
 
@@ -268,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
                 Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
             }
 
-            goToCheckAccuracy(result);
+            goToDirectEntry(resultOfTextToImage);
         }
 
         //For TAKE_PICTURE
@@ -281,9 +287,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
                 e.printStackTrace();
                 Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
             }
-            goToCheckAccuracy(result);
+            goToDirectEntry(resultOfTextToImage);
         }
 
+        //When it returns...
+        if (requestCode == GET_TEXT_FOR_SEARCH && resultCode == Activity.RESULT_OK){
+            String textForSearch = data.getStringExtra("result");
+            presenter.searchStories(textForSearch);
+        }
 
         //FOR ANALYZE_IMAGE code
         //if success
@@ -301,7 +312,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //if it the search failed, show a failure message (on the stories page?)
 
     }
-
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -347,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             String result = extractText(bitmap);
 
             MainActivity activity = activityWeakReference.get();
-            activity.result = result;
+            activity.resultOfTextToImage = result;
             //TODO: What happens if there is no text found?
 
 

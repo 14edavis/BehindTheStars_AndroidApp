@@ -1,23 +1,11 @@
 package org.storiesbehindthestars.wwiifallenapp.presenters;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.storiesbehindthestars.wwiifallenapp.MainActivity;
-import org.storiesbehindthestars.wwiifallenapp.R;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.storiesbehindthestars.wwiifallenapp.models.Story;
 
 
 public class MainPresenter {
@@ -34,9 +22,10 @@ public class MainPresenter {
     public interface MVPView{ //functions that it has to have...
         public void goToCamera();
         public void goToDirectEntry();
-        public void goToCheckAccuracy(String imageToTextResult);
+        public void goToDirectEntry(String imageToTextResult);
         public void goToPhotos();
-        public void setResult(String result);
+        public void setResultOfTextToImage(String resultOfTextToImage);
+        public void goToStories(Story[] stories);
     }
 
     public MainPresenter(MainActivity view){
@@ -67,9 +56,14 @@ public class MainPresenter {
     }
 
     public void readImageText(Bitmap bitmap){
-        view.setResult("Thomas T Takao"); //TODO: Place holder result
+        view.setResultOfTextToImage("Thomas T Takao"); //TODO: Place holder result
     }
 
+    public void searchStories(String textForSearch){
+        Story[] stories = new Story[1]; //TODO: IMPLEMENT API SEARCH
+        view.goToStories(stories);
+
+    }
 
 
 
