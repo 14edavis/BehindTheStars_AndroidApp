@@ -261,7 +261,7 @@ public class MemorialView extends MaterialCardView {
                 MemorialView.this.profileImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
                 MemorialView.this.backgroundImageView.setImageDrawable(drawables[1]);
-                
+
             }
         }
     }

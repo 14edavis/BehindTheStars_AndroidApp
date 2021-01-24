@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //FOR PICK PICTURE
+        //FOR SELECT_IMAGE from file
         if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
             Uri pictureUri = data.getData();
             try {
@@ -277,9 +277,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             goToDirectEntry(resultOfTextToImage);
         }
 
-        //For TAKE_PICTURE
+        //For TAKE_PICTURE from camera
         if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
             Uri pictureUri = Uri.parse(filePath);
+            //TODO: Figure out how to properly get bitmap from picture taken
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
                 presenter.readImageText(bitmap);
@@ -323,194 +324,238 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         }
     }
 
-
-//based on: https://codinginflow.com/tutorials/android/asynctask
-    private static class TessAsyncTask extends AsyncTask<Integer, Integer, String> {
-        private static final String TESSDATA = "tessdata";
-        private Bitmap bitmap;
-        private TessBaseAPI tessBaseApi;
-        private static final String lang = "eng";
-
-        private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString()+ "/TesseractSample/";
-        private static final String TAG = MainActivity.class.getSimpleName();
-
-        private WeakReference<MainActivity> activityWeakReference;
-
-        TessAsyncTask(MainActivity activity, Bitmap bitmap) {
-            activityWeakReference = new WeakReference<MainActivity>(activity);
-            this.bitmap = bitmap;
-        }
+    private class TextToImageAsyncTask extends AsyncTask<Void, Void, Void>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            MainActivity activity = activityWeakReference.get();
-            if (activity == null || activity.isFinishing()) {
-                return;
-            }
-            activity.progressBar.setVisibility(View.VISIBLE);
+            MainActivity.this.progressBar.setVisibility(View.VISIBLE);
         }
+
         @Override
-        protected String doInBackground(Integer... integers) {
-
-            //PUT ACTION HERE
-            prepareTesseract();
-            String result = extractText(bitmap);
-
-            MainActivity activity = activityWeakReference.get();
-            activity.resultOfTextToImage = result;
-            //TODO: What happens if there is no text found?
-
-
-            return "Finished!";
+        protected Void doInBackground(Void... voids) {
+            //TODO: read text from image
+            return null;
         }
+
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            MainActivity activity = activityWeakReference.get();
-            if (activity == null || activity.isFinishing()) {
-                return;
-            }
-            activity.progressBar.setProgress(values[0]);
-        }
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            MainActivity activity = activityWeakReference.get();
-            if (activity == null || activity.isFinishing()) {
-                return;
-            }
-//            Toast.makeText(activity, s, Toast.LENGTH_SHORT).show();
-            activity.progressBar.setProgress(0);
-            activity.progressBar.setVisibility(View.INVISIBLE);
-        }
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            MainActivity.this.progressBar.setVisibility(View.INVISIBLE);
 
-        //TESS STUFF
-
-        // FROM: https://github.com/ashomokdev/Tess-two_example/blob/master/app/src/main/java/com/ashomok/tesseractsample/MainActivity.java
-
-        //    public void doOCR() {
-        //        prepareTesseract();
-        //        startOCR(outputFileUri);
-        //    }
-
-        /**
-         * Prepare directory on external storage
-         *
-         * @param path
-         * @throws Exception
-         */
-        private void prepareDirectory(String path) {
-
-            File dir = new File(path);
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    Log.e(TAG, "ERROR: Creation of directory " + path + " failed, check does Android Manifest have permission to write to external storage.");
-                }
-            } else {
-                Log.i(TAG, "Created directory " + path);
-            }
-        }
-
-
-        public void prepareTesseract() {
-            try {
-                prepareDirectory(DATA_PATH + TESSDATA);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            copyTessDataFiles(TESSDATA);
-        }
-
-        /**
-         * don't run this code in main thread - it stops UI thread. Create AsyncTask instead.
-         * http://developer.android.com/intl/ru/reference/android/os/AsyncTask.html
-         *
-         * @param imgUri
-         */
-    //    private void startOCR(Uri imgUri) {
-    //        try {
-    //            BitmapFactory.Options options = new BitmapFactory.Options();
-    //            options.inSampleSize = 4; // 1 - means max size. 4 - means maxsize/4 size. Don't use value <4, because you need more memory in the heap to store your data.
-    //            Bitmap bitmap = BitmapFactory.decodeFile(imgUri.getPath(), options);
-    //
-    //            result = extractText(bitmap);
-    //            result = "testing! ...";
-    //
-    ////            textView.setText(result); TODO: THIS!
-    //
-    //        } catch (Exception e) {
-    //            Log.e(TAG, e.getMessage());
-    //        }
-    //    }
-
-
-        public String extractText(Bitmap bitmap) {
-            try {
-                tessBaseApi = new TessBaseAPI();
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-                if (tessBaseApi == null) {
-                    Log.e(TAG, "TessBaseAPI is null. TessFactory not returning tess object.");
-                }
-            }
-
-            tessBaseApi.init(DATA_PATH, lang);  //TODO: for some reason it crashes here. It says that the file path does not exist.
-
-    //       //EXTRA SETTINGS
-    //        //For example if we only want to detect numbers
-    //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
-    //
-    //        //blackList Example
-    //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
-    //                "YTRWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
-
-            Log.d(TAG, "Training file loaded");
-            tessBaseApi.setImage(bitmap);
-            String extractedText = "empty result";
-            try {
-                extractedText = tessBaseApi.getUTF8Text();
-            } catch (Exception e) {
-                Log.e(TAG, "Error in recognizing text.");
-            }
-            tessBaseApi.end();
-            return extractedText;
-        }
-
-    public void copyTessDataFiles(String path) {
-        MainActivity activity = activityWeakReference.get();
-        try {
-            String fileList[] = activity.getAssets().list(path);
-
-            for (String fileName : fileList) {
-
-                // open file within the assets folder
-                // if it is not already there copy it to the sdcard
-                String pathToDataFile = DATA_PATH + path + "/" + fileName;
-                if (!(new File(pathToDataFile)).exists()) {
-
-                    InputStream in = activity.getAssets().open(path + "/" + fileName);
-
-                    OutputStream out = new FileOutputStream(pathToDataFile);
-
-                    // Transfer bytes from in to out
-                    byte[] buf = new byte[1024];
-                    int len;
-
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-                    in.close();
-                    out.close();
-
-                    Log.d(TAG, "Copied " + fileName + "to tessdata");
-                }
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
         }
     }
+
+    private class Fold3APIAsyncTask extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            MainActivity.this.progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            //TODO: Search Fold3 Database with API
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            MainActivity.this.progressBar.setVisibility(View.INVISIBLE);
+
+        }
     }
+
+
+    
+//TODO: Remove. Rewrite majority in presenter (if possible)
+//based on: https://codinginflow.com/tutorials/android/asynctask
+//    private static class TessAsyncTask extends AsyncTask<Integer, Integer, String> {
+//        private static final String TESSDATA = "tessdata";
+//        private Bitmap bitmap;
+//        private TessBaseAPI tessBaseApi;
+//        private static final String lang = "eng";
+//
+//        private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString()+ "/TesseractSample/";
+//        private static final String TAG = MainActivity.class.getSimpleName();
+//
+//        private WeakReference<MainActivity> activityWeakReference;
+//
+//        TessAsyncTask(MainActivity activity, Bitmap bitmap) {
+//            activityWeakReference = new WeakReference<MainActivity>(activity);
+//            this.bitmap = bitmap;
+//        }
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            MainActivity activity = activityWeakReference.get();
+//            if (activity == null || activity.isFinishing()) {
+//                return;
+//            }
+//            activity.progressBar.setVisibility(View.VISIBLE);
+//        }
+//        @Override
+//        protected String doInBackground(Integer... integers) {
+//
+//            //PUT ACTION HERE
+//            prepareTesseract();
+//            String result = extractText(bitmap);
+//
+//            MainActivity activity = activityWeakReference.get();
+//            activity.resultOfTextToImage = result;
+//            //TODO: What happens if there is no text found?
+//
+//
+//            return "Finished!";
+//        }
+//        @Override
+//        protected void onProgressUpdate(Integer... values) {
+//            super.onProgressUpdate(values);
+//            MainActivity activity = activityWeakReference.get();
+//            if (activity == null || activity.isFinishing()) {
+//                return;
+//            }
+//            activity.progressBar.setProgress(values[0]);
+//        }
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//            MainActivity activity = activityWeakReference.get();
+//            if (activity == null || activity.isFinishing()) {
+//                return;
+//            }
+////            Toast.makeText(activity, s, Toast.LENGTH_SHORT).show();
+//            activity.progressBar.setProgress(0);
+//            activity.progressBar.setVisibility(View.INVISIBLE);
+//        }
+//
+//        //TESS STUFF
+//
+//        // FROM: https://github.com/ashomokdev/Tess-two_example/blob/master/app/src/main/java/com/ashomok/tesseractsample/MainActivity.java
+//
+//        //    public void doOCR() {
+//        //        prepareTesseract();
+//        //        startOCR(outputFileUri);
+//        //    }
+//
+//        /**
+//         * Prepare directory on external storage
+//         *
+//         * @param path
+//         * @throws Exception
+//         */
+//        private void prepareDirectory(String path) {
+//
+//            File dir = new File(path);
+//            if (!dir.exists()) {
+//                if (!dir.mkdirs()) {
+//                    Log.e(TAG, "ERROR: Creation of directory " + path + " failed, check does Android Manifest have permission to write to external storage.");
+//                }
+//            } else {
+//                Log.i(TAG, "Created directory " + path);
+//            }
+//        }
+//
+//
+//        public void prepareTesseract() {
+//            try {
+//                prepareDirectory(DATA_PATH + TESSDATA);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            copyTessDataFiles(TESSDATA);
+//        }
+//
+//        /**
+//         * don't run this code in main thread - it stops UI thread. Create AsyncTask instead.
+//         * http://developer.android.com/intl/ru/reference/android/os/AsyncTask.html
+//         *
+//         * @param imgUri
+//         */
+//    //    private void startOCR(Uri imgUri) {
+//    //        try {
+//    //            BitmapFactory.Options options = new BitmapFactory.Options();
+//    //            options.inSampleSize = 4; // 1 - means max size. 4 - means maxsize/4 size. Don't use value <4, because you need more memory in the heap to store your data.
+//    //            Bitmap bitmap = BitmapFactory.decodeFile(imgUri.getPath(), options);
+//    //
+//    //            result = extractText(bitmap);
+//    //            result = "testing! ...";
+//    //
+//    ////            textView.setText(result); TODO: THIS!
+//    //
+//    //        } catch (Exception e) {
+//    //            Log.e(TAG, e.getMessage());
+//    //        }
+//    //    }
+//
+//
+//        public String extractText(Bitmap bitmap) {
+//            try {
+//                tessBaseApi = new TessBaseAPI();
+//            } catch (Exception e) {
+//                Log.e(TAG, e.getMessage());
+//                if (tessBaseApi == null) {
+//                    Log.e(TAG, "TessBaseAPI is null. TessFactory not returning tess object.");
+//                }
+//            }
+//
+//            tessBaseApi.init(DATA_PATH, lang);  //TODO: for some reason it crashes here. It says that the file path does not exist.
+//
+//    //       //EXTRA SETTINGS
+//    //        //For example if we only want to detect numbers
+//    //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
+//    //
+//    //        //blackList Example
+//    //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
+//    //                "YTRWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
+//
+//            Log.d(TAG, "Training file loaded");
+//            tessBaseApi.setImage(bitmap);
+//            String extractedText = "empty result";
+//            try {
+//                extractedText = tessBaseApi.getUTF8Text();
+//            } catch (Exception e) {
+//                Log.e(TAG, "Error in recognizing text.");
+//            }
+//            tessBaseApi.end();
+//            return extractedText;
+//        }
+//
+//    public void copyTessDataFiles(String path) {
+//        MainActivity activity = activityWeakReference.get();
+//        try {
+//            String fileList[] = activity.getAssets().list(path);
+//
+//            for (String fileName : fileList) {
+//
+//                // open file within the assets folder
+//                // if it is not already there copy it to the sdcard
+//                String pathToDataFile = DATA_PATH + path + "/" + fileName;
+//                if (!(new File(pathToDataFile)).exists()) {
+//
+//                    InputStream in = activity.getAssets().open(path + "/" + fileName);
+//
+//                    OutputStream out = new FileOutputStream(pathToDataFile);
+//
+//                    // Transfer bytes from in to out
+//                    byte[] buf = new byte[1024];
+//                    int len;
+//
+//                    while ((len = in.read(buf)) > 0) {
+//                        out.write(buf, 0, len);
+//                    }
+//                    in.close();
+//                    out.close();
+//
+//                    Log.d(TAG, "Copied " + fileName + "to tessdata");
+//                }
+//            }
+//        } catch (IOException e) {
+//            Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
+//        }
+//    }
+//    }
 
 
 
