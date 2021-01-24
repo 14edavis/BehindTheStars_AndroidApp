@@ -11,10 +11,15 @@ public class StoriesPresenter {
     private final String URL_SEARCH_END = "&military.conflict=World+War+II&general.title.content.doc-type=STORY_PAGE:Memorial";
 
     public interface MVPView{ //functions that it has to have...
+        public void goToStory(int storyIndex);
          }
 
     public StoriesPresenter (StoriesActivity view){
         this.view = view;
+    }
+
+    public void handleStoryClicked(int storyIndex){
+        view.goToStory(storyIndex);
     }
 
     public String createSearchUrl(String nameToSearch){
@@ -34,6 +39,7 @@ public class StoriesPresenter {
 
         return urlToGoTo;
     }
+
 
 
 }

@@ -138,22 +138,20 @@ public class MemorialView extends MaterialCardView {
         //Pull from web...
 //        new TextLoaderAsyncTask().execute();
         new ImageLoaderAsyncTask().execute();
-
-
     }
 
-    //TODO: Get displayImage working with URL image
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void displayImage() {
         //Header
 //        if (post.pictureUri.equals("") && showFullPost) {
             LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 320);
-            backgroundImageView.setImageResource(R.drawable.ic_baseline_image_640);
+            backgroundImageView.setImageResource(R.drawable.default_background_fold3);
             header.setBackgroundColor(getResources().getColor(R.color.white, null));
             backgroundImageView.setLayoutParams(imageParams);
             backgroundImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-            profileImageView.setImageResource(R.drawable.ic_baseline_person_outline_96);
+            profileImageView.setImageResource(R.drawable.default_silhouette_fold3);
+
     }
 
     //for testing, to force text, TODO fix later
@@ -239,6 +237,7 @@ public class MemorialView extends MaterialCardView {
                 URL url = new URL(MemorialView.this.story.profilePicURL); //"https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
                 content = (InputStream) url.getContent();
                 Drawable profileImage = Drawable.createFromStream(content, "src");
+                //TODO: Figure out the best way to make the profile image drawable a decent size and shape
 
                 URL url2 = new URL(MemorialView.this.story.backgroundPicURL); //"https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941");
                 content2 = (InputStream) url2.getContent();
@@ -256,7 +255,13 @@ public class MemorialView extends MaterialCardView {
         protected void onPostExecute(Drawable[] drawables) {
             if (drawables != null){
                 MemorialView.this.profileImageView.setImageDrawable(drawables[0]);
+
+                MemorialView.this.profileImageView.setMinimumHeight(280);
+                MemorialView.this.profileImageView.setMinimumWidth(240);
+                MemorialView.this.profileImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
                 MemorialView.this.backgroundImageView.setImageDrawable(drawables[1]);
+                
             }
         }
     }

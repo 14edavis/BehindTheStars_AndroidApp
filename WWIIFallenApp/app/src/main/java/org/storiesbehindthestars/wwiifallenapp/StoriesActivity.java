@@ -50,12 +50,19 @@ public class StoriesActivity extends AppCompatActivity implements StoriesPresent
     public void displayStories(){ //TODO:Adjust once MemorialView is updated to accept an actual story
         for (int i = 0; i < stories.length; i++){
             MemorialView memorialView = new MemorialView(this, stories[i], false);
+            int storyIndex = i;
             memorialView.setOnClickListener((view)->{
-                Intent intent = new Intent(this, StoryActivity.class);
-                startActivity(intent);
+                presenter.handleStoryClicked(storyIndex);
+
+//                Intent intent = new Intent(this, StoryActivity.class);
+//                startActivity(intent);
             });
             mainLayout.addView(memorialView);
         }
+    }
+
+    public void goToStory(int storyIndex){
+        goToStory(stories[storyIndex]);
     }
 
     public void goToStory(Story story){

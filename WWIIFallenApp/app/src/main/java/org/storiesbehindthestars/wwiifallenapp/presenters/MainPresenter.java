@@ -66,17 +66,15 @@ public class MainPresenter {
         Story[] stories = { new Story ("TEST STORY", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
                 "https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509",
                 "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941"),
-                new Story ("TEST STORY", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
+                new Story ("TEST STORY 2", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
                         "https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509",
                         "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941"),
-                new Story ("TEST STORY", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
+                new Story ("TEST STORY 3", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
                         "https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509",
                         "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941")};
 
         view.goToStories(stories);
     }
-
-
 
 
 
