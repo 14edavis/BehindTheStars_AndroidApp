@@ -13,6 +13,10 @@ public class StoriesPresenter {
     public interface MVPView{ //functions that it has to have...
          }
 
+    public StoriesPresenter (StoriesActivity view){
+        this.view = view;
+    }
+
     public String createSearchUrl(String nameToSearch){
         String urlToGoTo = URL_SEARCH_START;
 
@@ -31,7 +35,5 @@ public class StoriesPresenter {
         return urlToGoTo;
     }
 
-    public StoriesPresenter (StoriesActivity view){
-        this.view = view;
-    }
+
 }

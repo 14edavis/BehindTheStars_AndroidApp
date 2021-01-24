@@ -60,9 +60,20 @@ public class MainPresenter {
     }
 
     public void searchStories(String textForSearch){
-        Story[] stories = new Story[1]; //TODO: IMPLEMENT API SEARCH
-        view.goToStories(stories);
+        //TODO: IMPLEMENT API SEARCH
 
+        //test stories
+        Story[] stories = { new Story ("TEST STORY", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
+                "https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509",
+                "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941"),
+                new Story ("TEST STORY", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
+                        "https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509",
+                        "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941"),
+                new Story ("TEST STORY", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
+                        "https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509",
+                        "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941")};
+
+        view.goToStories(stories);
     }
 
 

@@ -46,21 +46,21 @@ public class MemorialView extends MaterialCardView {
 //    private MaterialTextView descriptionView;
     private MaterialTextView contentsView;
     private FrameLayout header;
-    private Story memorial;
+    private Story story;
     private boolean showFullPost = false;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public MemorialView(Context context, ApiResource webLinkToStory) {
-        this(context, webLinkToStory,false);
+    public MemorialView(Context context, Story story) {
+        this(context, story,false);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public MemorialView(Context context, ApiResource webLinkToStory, boolean showFullPost){
+    public MemorialView(Context context, Story story, boolean showFullPost){
         super(context);
 
         //set variables
-//        this.post = post; TODO
+        this.story = story;
         this.showFullPost = showFullPost;
 //        setTag(post.id); TODO
 
@@ -99,16 +99,16 @@ public class MemorialView extends MaterialCardView {
 
         //Body
         titleView = new MaterialTextView(context, null, R.attr.textAppearanceHeadline6);
-        titleView.setText("Title"); //TODO
+        titleView.setText(story.name);
         body.addView(titleView);
 
 //        descriptionView = new MaterialTextView(context);
-//        descriptionView.setText("blah blah blah..."); //TODO
+//        descriptionView.setText("blah blah blah...");
 //        body.addView(descriptionView);
 //        descriptionView.setTextSize(18);
 
         contentsView = new MaterialTextView(context);
-        contentsView.setText("main content"); //TODO
+        contentsView.setText(story.storyText);
         body.addView(contentsView);
 
         //Handling full vs partial post
@@ -136,7 +136,7 @@ public class MemorialView extends MaterialCardView {
         }
 
         //Pull from web...
-        new TextLoaderAsyncTask().execute();
+//        new TextLoaderAsyncTask().execute();
         new ImageLoaderAsyncTask().execute();
 
 
@@ -156,22 +156,20 @@ public class MemorialView extends MaterialCardView {
             profileImageView.setImageResource(R.drawable.ic_baseline_person_outline_96);
     }
 
-
     //for testing, to force text, TODO fix later
-    public void setText(String name, String story){
+    private void setText(String name, String story){
         titleView.setText(name);
         contentsView.setText(story);
     }
 
-
-    //TODO Incorporate a Memorial object
-//    public void setBlogPost(BlogPost post) {
-//        this.post = post;
-//        displayImage();
-//        titleView.setText(post.title);
-//        descriptionView.setText(post.description);
-//        contentsView.setText(post.contents);
-//    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void setStory(Story story) {
+        this.story = story;
+        displayImage();
+        titleView.setText(story.name);
+//        descriptionView.setText(story.storyText);
+        contentsView.setText(story.storyText);
+    }
 
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
@@ -183,6 +181,7 @@ public class MemorialView extends MaterialCardView {
             fab.setOnClickListener(l);
         }
     }
+
 
     /** FOR LOADING AND SETTING TEXT **/
     class TextLoaderAsyncTask extends AsyncTask<URL, Void, String[]> {
@@ -237,11 +236,11 @@ public class MemorialView extends MaterialCardView {
             InputStream content2 = null;
 
             try {
-                URL url = new URL("https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
+                URL url = new URL(MemorialView.this.story.profilePicURL); //"https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509");
                 content = (InputStream) url.getContent();
                 Drawable profileImage = Drawable.createFromStream(content, "src");
 
-                URL url2 = new URL("https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941");
+                URL url2 = new URL(MemorialView.this.story.backgroundPicURL); //"https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941");
                 content2 = (InputStream) url2.getContent();
                 Drawable backgroundImage = Drawable.createFromStream(content2, "src");
 

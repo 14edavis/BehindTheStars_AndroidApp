@@ -48,8 +48,8 @@ import java.lang.ref.WeakReference;
 public class MainActivity extends AppCompatActivity implements MainPresenter.MVPView {
 
     //names
-    public final String NAME_OF_STRING_EXTRA = "imageText";
-    public final String STORIES_EXTRA = "searchResults";
+    public static final String NAME_OF_STRING_EXTRA = "imageText";
+    public static final String STORIES_EXTRA = "searchResults";
 
     //permission requests
     public final int STORAGE_PERMISSION_REQUESTED = 0;
