@@ -17,3 +17,28 @@ Once a story is found, the simple story display appears. The story display will 
 In some cases, the app will need to display multiple stories. The user may scan a memorial with multiple names, or a single name may have more than one story associated with it. When this happens, the app will show collapsed versions of the stories in a scrollable view. The user can then select which story they wish to read.
 
 ![If There Are Multiple Stories](screenshots_v1/MultipleStories.jpg)
+
+
+# Image-to-Text
+
+This app uses Tesseract Android Tools, an optical character recognition (OCR) developed by Google, to read text from images. For initial implementation of the Tesseract library, I used the following examples as guides:
+
+- [OCR on Android by David González Verdugo](https://solidgeargroup.com/en/ocr-on-android/)
+
+- [Tess-two Example by ashomokdev](https://github.com/ashomokdev/Tess-two_example)
+
+
+To use the Tess-Two Tesseract library, the app has the following dependency in its build.gradle:
+
+```
+dependencies {
+    compile 'com.rmtheis:tess-two:6.0.0'
+}
+```
+
+A TessOCR class in the api package handles the TessBaseAPI. The TessOCR is based mainly on Verdugo's example. However, when the app ran into an error saying the file path did not exist, I implement the `copyTessDataFiles(String path)` function from ashomokdev's project as a solution and changed the data file path to `DATA_PATH = context.getFilesDir()+"";`.
+
+Tesseract requires you to download `.traineddata` files for any language you wish to read. For this app, the data is stored in a a `/tessdata/` folder in the [project assets](https://advancetechtutorial.blogspot.com/2015/01/assets-folder-in-android-studio.html). You can download language files here: [https://github.com/tesseract-ocr/tessdata](https://github.com/tesseract-ocr/tessdata).
+
+A few other things to note about using Tesseract... First, make sure your app has permission to read and write to external storage. Second, this app uses an AsyncTask to run the image-to-text. Without an AsyncTask, the UI will freeze and possibly even crash your app. Any functions for the image-to-text should be in the same Activity class as the AsyncTask.
+
