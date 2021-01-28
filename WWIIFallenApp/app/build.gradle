@@ -46,5 +46,6 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     //Tess-Two, for image to text reading
-    api 'com.rmtheis:tess-two:5.4.1'
+//    api 'com.rmtheis:tess-two:5.4.1'
+    compile 'com.rmtheis:tess-two:6.0.0'
 }

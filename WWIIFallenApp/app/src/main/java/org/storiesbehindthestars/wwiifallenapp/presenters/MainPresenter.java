@@ -2,9 +2,11 @@ package org.storiesbehindthestars.wwiifallenapp.presenters;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 
 import org.storiesbehindthestars.wwiifallenapp.MainActivity;
+import org.storiesbehindthestars.wwiifallenapp.api.TessOCR;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 
 
@@ -20,12 +22,15 @@ public class MainPresenter {
 
 
     public interface MVPView{ //functions that it has to have...
+        public TessOCR mTessOCR = null;
+
         public void goToCamera();
         public void goToDirectEntry();
         public void goToDirectEntry(String imageToTextResult);
         public void goToPhotos();
         public void setResultOfTextToImage(String resultOfTextToImage);
         public void goToStories(Story[] stories);
+
     }
 
     public MainPresenter(MainActivity view){
@@ -55,10 +60,27 @@ public class MainPresenter {
         view.goToDirectEntry();
     }
 
-    public void readImageText(Bitmap bitmap){
-        view.setResultOfTextToImage("Thomas T Takao"); //TODO: Place holder result
-    }
 
+    /*Discovered that this needs to be in the Activity for it to work properly*/
+//    //READING TEXT FROM IMAGE
+//    public void readImageText(Bitmap bitmap){
+//        view.setResultOfTextToImage("Thomas T Takao"); //TODO: Place holder result
+//        final String srcText = view.mTessOCR.getOCRResult(bitmap);
+//
+//        if (srcText != null && !srcText.equals("")){    //if it found something
+//            view.setResultOfTextToImage(srcText);
+//        }
+//        else{   //if it's empty
+//            view.setResultOfTextToImage("Error Reading Image");
+//        }
+//
+//        view.mTessOCR.onDestroy();
+//    }
+
+
+
+
+    //FOLD3 API DATABASE HOOK UP
     public void searchStories(String textForSearch){
         //TODO: IMPLEMENT API SEARCH
 

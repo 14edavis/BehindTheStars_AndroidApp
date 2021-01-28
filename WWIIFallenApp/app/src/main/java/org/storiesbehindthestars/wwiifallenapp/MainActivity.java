@@ -10,6 +10,7 @@ import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -18,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
@@ -34,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.storiesbehindthestars.wwiifallenapp.api.TessOCR;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 import org.storiesbehindthestars.wwiifallenapp.presenters.MainPresenter;
 
@@ -62,10 +65,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     public final int SELECT_IMAGE = 3;
 
     //presenter
-    MainPresenter presenter;
+    private MainPresenter presenter;
+
+    //api
+    public TessOCR mTessOCR;
 
     //components
     private ProgressBar progressBar;
+    private Uri pictureUri;
 
     //TODO: Do we need these?
     public String resultOfTextToImage = "";
@@ -78,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         super.onCreate(savedInstanceState);
 
         presenter = new MainPresenter(this);
+
 
         FrameLayout frameLayout = new FrameLayout(this);
 
@@ -162,6 +170,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //set view
         setContentView(frameLayout);
 
+        //TODO:tidy up...
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED); //todo: PUT WHERE THIS MAKES MORE SENSE
+
+        mTessOCR = new TessOCR(this, "eng");
+
 
         //TODO: remove later... just for testing
 //        MaterialButton testButton = new MaterialButton(this);
@@ -173,8 +186,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 //        mainLayout.addView(testButton);
 
 
-        //TODO:tidy up...
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED); //todo: PUT WHERE THIS MAKES MORE SENSE
 
         File file = new File(Environment.getExternalStorageDirectory().toString()+ "/WWIIFallenApp/tessdata/");
         Log.e("file:", file.toString());
@@ -264,17 +275,19 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         super.onActivityResult(requestCode, resultCode, data);
         //FOR SELECT_IMAGE from file
         if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
-            Uri pictureUri = data.getData();
-            try {
-                //solution from: https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
-                presenter.readImageText(bitmap); //TODO: Need to get Tess image-to-text working
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
-            }
+            new ImageToTextAsyncTask().execute();
+            this.pictureUri = data.getData();
 
-            goToDirectEntry(resultOfTextToImage);
+//            try {
+//                //solution from: https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
+//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
+//                presenter.readImageText(bitmap); //TODO: Need to get Tess image-to-text working
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
+//            }
+
+//            goToDirectEntry(resultOfTextToImage);
         }
 
         //For TAKE_PICTURE from camera
@@ -283,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             //TODO: Figure out how to properly get bitmap from picture taken
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pictureUri);
-                presenter.readImageText(bitmap);
+//                presenter.readImageText(bitmap); //TODO: Replace this, incorporate async task
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
@@ -324,7 +337,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         }
     }
 
-    private class TextToImageAsyncTask extends AsyncTask<Void, Void, Void>{
+
+    //READ TEXT FROM IMAGE
+    public class ImageToTextAsyncTask extends AsyncTask<Void, Void, Void>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -333,7 +348,22 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         @Override
         protected Void doInBackground(Void... voids) {
-            //TODO: read text from image
+            try {
+                //solution from: https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), MainActivity.this.pictureUri);
+
+                /*THIS IS WHERE ALL THE MAGIC HAPPENS...*/
+                MainActivity.this.readImageText(bitmap); //TODO: Need to get Tess image-to-text working
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this, "Unable to read image", Toast.LENGTH_SHORT).show();
+            }
+
+
+            goToDirectEntry(MainActivity.this.resultOfTextToImage);
+
             return null;
         }
 
@@ -345,6 +375,54 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         }
     }
 
+
+    public void readImageText(Bitmap bitmap){
+
+        final String srcText = this.mTessOCR.getOCRResult(bitmap);
+
+        if (srcText != null && !srcText.equals("")){    //if it found something
+            setResultOfTextToImage(srcText);
+        }
+        else{   //if it's empty
+            setResultOfTextToImage("Error Reading Image");
+        }
+
+        mTessOCR.onDestroy();
+    }
+
+
+
+//    private void doOCR (final Bitmap bitmap) {
+//        if (mProgressDialog == null) {
+//            mProgressDialog = ProgressDialog.show(ocrView, "Processing",
+//                    "Doing OCR...", true);
+//        } else {
+//            mProgressDialog.show();
+//        }
+//        new Thread(new Runnable() {
+//            public void run() {
+//                final String srcText = mTessOCR.getOCRResult(bitmap);
+//                ocrView.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        // TODO Auto-generated method stub
+//                        if (srcText != null && !srcText.equals("")) {
+//                            //srcText contiene el texto reconocido
+//                        }
+//                        mTessOCR.onDestroy();
+//                        mProgressDialog.dismiss();
+//                    }
+//                });
+//            }
+//        }).start();
+//    }
+
+
+
+
+
+
+    //FOLD3 API
     private class Fold3APIAsyncTask extends AsyncTask<Void, Void, Void>{
         @Override
         protected void onPreExecute() {
@@ -365,6 +443,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         }
     }
+
+
+    
 
 
     

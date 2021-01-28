@@ -20,29 +20,21 @@ public class TessOCR {
     private Context context;
 
     //from github example
-    private String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/WWIIFallenApp/";//"/TesseractSample/";
+    private String DATA_PATH;
     private static final String TESSDATA = "tessdata"; //DO NOT CHANGE
     private static final String TAG = MainActivity.class.getSimpleName();
-
 
     public TessOCR(Context context, String language) {
         mTess = new TessBaseAPI();
         this.context = context;
-//
-//        String datapath = context.getFilesDir() + "/sampledata/"; //"/tesseract/";
-//        datapath = Environment.getExternalStorageDirectory() + "/sampledata/";
-//
-//        datapath = context.getFilesDir().getPath();
-//
-//        datapath = Environment.getExternalStorageDirectory().toString() + "/WWIIFallenApp/tessdata/";
 
         DATA_PATH = context.getFilesDir()+"";
-
 
         copyTessDataFiles(TESSDATA);
         String datapath = DATA_PATH;
 
         mTess.init(datapath, language);
+        Log.d(TAG, "TessBaseAPI mTess created.");
     }
 
     public String getOCRResult(Bitmap bitmap) {
@@ -54,17 +46,16 @@ public class TessOCR {
         if (mTess != null) mTess.end();
     }
 
-
     /**
      * source: https://github.com/ashomokdev/Tess-two_example/blob/master/app/src/main/java/com/ashomok/tesseractsample/MainActivity.java
      * Copy tessdata files (located on assets/tessdata) to destination directory
-     *
      * @param path - name of directory with .traineddata files
      */
     private void copyTessDataFiles(String path) {
         File root = new File(context.getFilesDir(), "tessdata");
         if (!root.exists()) {
             root.mkdirs();
+            Log.d(TAG, "tessdata directory successfully created");
         }
 
         try {
@@ -99,7 +90,6 @@ public class TessOCR {
             Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
         }
     }
-
 }
 
 //Source: https://solidgeargroup.com/en/ocr-on-android/
