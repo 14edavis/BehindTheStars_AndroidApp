@@ -85,7 +85,7 @@ public class MainPresenter {
 
 
     //FOLD3 API DATABASE HOOK UP
-    public void searchStories(String textForSearch) throws IOException, JSONException {
+    public Story[] searchStories(String textForSearch) throws IOException, JSONException {
         //TODO: IMPLEMENT API SEARCH
 
         Fold3ExSearch searchAPI = new Fold3ExSearch(textForSearch);
@@ -108,7 +108,7 @@ public class MainPresenter {
                         "https://img.fold3.com/img/reference/STORY_PAGE/91243229?width=172&height=215&refresh=509",
                         "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/91243229??refresh=941")};
 
-        view.goToStories(stories);
+        return stories;
     }
 
 

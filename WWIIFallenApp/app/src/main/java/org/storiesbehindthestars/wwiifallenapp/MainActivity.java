@@ -37,6 +37,7 @@ import com.google.android.material.textview.MaterialTextView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.json.JSONException;
+import org.storiesbehindthestars.wwiifallenapp.api.Fold3ExSearch;
 import org.storiesbehindthestars.wwiifallenapp.api.TessOCR;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 import org.storiesbehindthestars.wwiifallenapp.presenters.MainPresenter;
@@ -75,8 +76,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
     private ProgressBar progressBar;
     private Uri pictureUri;
 
-    //TODO: Do we need these?
+    //AsyncTask Stuff
     public String resultOfTextToImage = "";
+    public String textToSearch = "";
+    public Story[] storiesFound;
     String filePath;
 
 
@@ -308,13 +311,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //When it returns...
         if (requestCode == GET_TEXT_FOR_SEARCH && resultCode == Activity.RESULT_OK){
             String textForSearch = data.getStringExtra("result");
-            try {
-                presenter.searchStories(textForSearch);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            textToSearch = textForSearch;
+            new Fold3APIAsyncTask().execute();
+
+//            goToStories(storiesFound); //have this in async task
         }
 
         //FOR ANALYZE_IMAGE code
@@ -437,8 +437,21 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             MainActivity.this.progressBar.setVisibility(View.VISIBLE);
         }
 
+        private void setStoriesFound(Story[] stories){
+            MainActivity.this.storiesFound = stories;
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
+            try {
+                Story[] stories = MainActivity.this.presenter.searchStories(MainActivity.this.textToSearch);
+                setStoriesFound(stories);
+                MainActivity.this.goToStories(MainActivity.this.storiesFound);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             //TODO: Search Fold3 Database with API
             return null;
         }
