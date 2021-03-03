@@ -36,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.json.JSONException;
 import org.storiesbehindthestars.wwiifallenapp.api.TessOCR;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 import org.storiesbehindthestars.wwiifallenapp.presenters.MainPresenter;
@@ -49,7 +50,7 @@ import java.lang.ref.WeakReference;
 
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.MVPView {
-
+//NOTE: https://www.fold3.com/ex-search?keywords=Benton+J+Broussard&military.conflict=World+War+II&general.title.content.doc-type=STORY_PAGE:Memorial&key=x2P6Q2Pf9jT7xREfcAyBRjJX
     //names
     public static final String NAME_OF_STRING_EXTRA = "imageText";
     public static final String STORIES_EXTRA = "searchResults";
@@ -307,7 +308,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         //When it returns...
         if (requestCode == GET_TEXT_FOR_SEARCH && resultCode == Activity.RESULT_OK){
             String textForSearch = data.getStringExtra("result");
-            presenter.searchStories(textForSearch);
+            try {
+                presenter.searchStories(textForSearch);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         //FOR ANALYZE_IMAGE code
@@ -353,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), MainActivity.this.pictureUri);
 
                 /*THIS IS WHERE ALL THE MAGIC HAPPENS...*/
-                MainActivity.this.readImageText(bitmap); //TODO: Need to get Tess image-to-text working
+                MainActivity.this.readImageText(bitmap);
 
 
             } catch (IOException e) {

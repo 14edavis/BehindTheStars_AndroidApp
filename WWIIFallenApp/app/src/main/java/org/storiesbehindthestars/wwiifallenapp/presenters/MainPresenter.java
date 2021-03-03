@@ -5,9 +5,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 
+import org.json.JSONException;
 import org.storiesbehindthestars.wwiifallenapp.MainActivity;
+import org.storiesbehindthestars.wwiifallenapp.api.Fold3ExSearch;
 import org.storiesbehindthestars.wwiifallenapp.api.TessOCR;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
+
+import java.io.IOException;
 
 
 public class MainPresenter {
@@ -81,8 +85,17 @@ public class MainPresenter {
 
 
     //FOLD3 API DATABASE HOOK UP
-    public void searchStories(String textForSearch){
+    public void searchStories(String textForSearch) throws IOException, JSONException {
         //TODO: IMPLEMENT API SEARCH
+
+        Fold3ExSearch searchAPI = new Fold3ExSearch(textForSearch);
+        //search fold3.com/ex-search for matching pages
+
+//        Story[] stories = searchAPI.getStories();
+        //get name, story, thumbnail, and banner from searching
+        //create a list of stories to pass on
+
+
 
         //test stories
         Story[] stories = { new Story ("TEST STORY", "1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing1 2 3 testing",
