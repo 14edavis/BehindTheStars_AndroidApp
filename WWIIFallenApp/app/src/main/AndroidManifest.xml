@@ -28,8 +28,31 @@
         </provider>
 
         <activity android:name=".StoryActivity"></activity>
-        <activity android:name=".StoriesActivity" />
-        <activity android:name=".DirectEntryActivity" />
+<!--            android:parentActivityName=".StoriesActivity" >-->
+<!--            &lt;!&ndash; Parent activity meta-data to support 4.0 and lower &ndash;&gt;-->
+<!--            <meta-data-->
+<!--                android:name="android.support.PARENT_ACTIVITY"-->
+<!--                android:value=".StoriesActivity" -->
+<!--                />-->
+<!--        </activity>-->
+
+        <activity android:name=".StoriesActivity"
+            android:parentActivityName=".MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity android:name=".DirectEntryActivity"
+            android:parentActivityName=".MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

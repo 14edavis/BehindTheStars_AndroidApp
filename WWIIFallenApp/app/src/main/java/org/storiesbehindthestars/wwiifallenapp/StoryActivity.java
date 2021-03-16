@@ -1,14 +1,18 @@
 package org.storiesbehindthestars.wwiifallenapp;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import org.storiesbehindthestars.wwiifallenapp.components.MemorialView;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
@@ -32,6 +36,11 @@ public class StoryActivity extends AppCompatActivity implements StoryPresenter.M
         presenter = new StoryPresenter(this);
         story = (Story) getIntent().getSerializableExtra(StoriesActivity.STORY);
 
+        // THE BACK BUTTON at the top. Also had to list the parent activity in the manifest
+        ActionBar ab = getSupportActionBar();
+//        ab.setDisplayHomeAsUpEnabled(true); //TODO: This goes back to an empty activity... figure out why
+        ab.setTitle(story.name);
+
         LinearLayout mainLayout = new LinearLayout(this);
         mainLayout.setOrientation(LinearLayout.VERTICAL);
         ScrollView scrollView = new ScrollView(this);
@@ -46,6 +55,25 @@ public class StoryActivity extends AppCompatActivity implements StoryPresenter.M
         mainLayout.addView(scrollView);
         setContentView(mainLayout);
 
+        memorialView.setOnClickListener((view)->{
+            presenter.handleViewButtonClick();
+        });
     }
 
+    public void goToFold3Page(){
+        Uri webpage = Uri.parse(story.storyURL);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+
+//    public void openWebPage(String url) {
+//        Uri webpage = Uri.parse(url);
+//        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+//        if (intent.resolveActivity(getPackageManager()) != null) {
+//            startActivity(intent);
+//        }
+//    }
 }

@@ -1,6 +1,7 @@
 package org.storiesbehindthestars.wwiifallenapp;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -28,6 +29,11 @@ public class StoriesActivity extends AppCompatActivity implements StoriesPresent
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // THE BACK BUTTON at the top. Also had to list the parent activity in the manifest
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle("Search Results");
+
         presenter = new StoriesPresenter(this);
         stories = (Story[]) getIntent().getSerializableExtra(MainActivity.STORIES_EXTRA);
 
@@ -44,6 +50,11 @@ public class StoriesActivity extends AppCompatActivity implements StoriesPresent
         if (stories.length == 1){ // if there's only one, just go straight to it
             goToStory(stories[0]);
         }
+
+        if (stories.length == 0){
+            //TODO
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

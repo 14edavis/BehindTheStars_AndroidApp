@@ -125,13 +125,19 @@ public class MemorialView extends MaterialCardView {
         // footer
         if (!showFullPost) {
             viewButton = new MaterialButton(context, null, R.attr.borderlessButtonStyle);
-            viewButton.setText("Read");
+            viewButton.setText("Read More");
             footer.addView(viewButton);
 //        footer.setGravity(Gravity.RIGHT);
         }
 
         // FAB
         if (showFullPost) {
+            viewButton = new MaterialButton(context);
+            viewButton.setText("Visit Online Memorial");
+            LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            buttonParams.gravity = Gravity.CENTER;
+            viewButton.setLayoutParams(buttonParams);
+            body.addView(viewButton);
 
             //TODO: Eventually add an option to bookmark the memorial here
         }

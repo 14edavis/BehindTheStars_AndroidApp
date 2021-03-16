@@ -1,5 +1,6 @@
 package org.storiesbehindthestars.wwiifallenapp;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -24,6 +25,11 @@ public class DirectEntryActivity extends AppCompatActivity implements DirectEntr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // THE BACK BUTTON at the top. Also had to list the parent activity in the manifest
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle("Find A Story");
 
         presenter = new DirectEntryPresenter(this);
 
