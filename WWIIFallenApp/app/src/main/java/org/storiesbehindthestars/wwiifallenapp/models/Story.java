@@ -26,6 +26,9 @@ public class Story implements Serializable {
     @ColumnInfo(name = "backgroundPicURL")
     public String backgroundPicURL;
 
+    @ColumnInfo(name = "storyURL")
+    public String storyURL;
+
     @ForeignKey(entity = ApiResource.class, parentColumns = "apiResourceColumn", childColumns = "storyColumn") //related to API call to get a specific story
     public String apiResourceFK;
 
@@ -35,11 +38,12 @@ public class Story implements Serializable {
         //TODO: get story and text from apiResource id, Use API
     }
 
-    public Story (String name, String text, String url1, String url2){
+    public Story (String name, String text, String url1, String url2, String storyURL){
         this.name = name;
         this.storyText = text;
         this.profilePicURL = url1;
         this.backgroundPicURL = url2;
+        this.storyURL = storyURL;
     }
 
 }

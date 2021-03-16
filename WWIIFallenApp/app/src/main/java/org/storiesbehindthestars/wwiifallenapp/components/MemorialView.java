@@ -132,6 +132,7 @@ public class MemorialView extends MaterialCardView {
 
         // FAB
         if (showFullPost) {
+
             //TODO: Eventually add an option to bookmark the memorial here
         }
 
