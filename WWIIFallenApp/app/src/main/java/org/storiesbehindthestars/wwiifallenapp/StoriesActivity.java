@@ -7,10 +7,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 
 import org.storiesbehindthestars.wwiifallenapp.components.MemorialView;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
@@ -53,7 +58,25 @@ public class StoriesActivity extends AppCompatActivity implements StoriesPresent
 
         if (stories.length == 0){
             //TODO
+
+            MaterialTextView emptyNote = new MaterialTextView(this,null, R.attr.textAppearanceHeadline6);
+            emptyNote.setText("No Stories Found");
+            LinearLayout.LayoutParams noteParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            noteParams.setMargins(0,24,0,24);
+            noteParams.gravity = (Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+            emptyNote.setLayoutParams(noteParams);
+
+            mainLayout.addView(emptyNote);
         }
+
+        MaterialButton returnButton = new MaterialButton(this, null, R.attr.borderlessButtonStyle);
+        returnButton.setText("Return To Home");
+        LinearLayout.LayoutParams buttonParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        buttonParams.gravity = (Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        returnButton.setLayoutParams(buttonParams);
+        
+        returnButton.setIconResource(R.drawable.ic_baseline_arrow_back_24);
+        mainLayout.addView(returnButton);
 
     }
 
