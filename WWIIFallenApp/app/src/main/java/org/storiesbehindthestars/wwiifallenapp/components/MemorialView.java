@@ -1,5 +1,6 @@
 package org.storiesbehindthestars.wwiifallenapp.components;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -48,15 +49,16 @@ public class MemorialView extends MaterialCardView {
     private FrameLayout header;
     private Story story;
     private boolean showFullPost = false;
+    private boolean isUnwritten = false;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public MemorialView(Context context, Story story) {
+    public MemorialView(Activity context, Story story) {
         this(context, story,false);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public MemorialView(Context context, Story story, boolean showFullPost){
+    public MemorialView(Activity context, Story story, boolean showFullPost){
         super(context);
 
         //set variables
@@ -107,8 +109,15 @@ public class MemorialView extends MaterialCardView {
 //        body.addView(descriptionView);
 //        descriptionView.setTextSize(18);
 
-        contentsView = new MaterialTextView(context);
+        contentsView = new MaterialTextView(context, null, R.attr.textAppearanceBody1);
         contentsView.setText(story.storyText);
+
+        if (story.storyText.equals("")){ //if there's no story...
+            isUnwritten = true;
+            contentsView =  new MaterialTextView(context, null, R.attr.textAppearanceBody2);
+            contentsView.setText("No one has written this story yet.");
+        }
+
         body.addView(contentsView);
 
         //Handling full vs partial post
@@ -138,6 +147,8 @@ public class MemorialView extends MaterialCardView {
             buttonParams.gravity = Gravity.CENTER;
             viewButton.setLayoutParams(buttonParams);
             body.addView(viewButton);
+
+            footer.addView(new ReturnButton(context));
 
             //TODO: Eventually add an option to bookmark the memorial here
         }
@@ -174,6 +185,14 @@ public class MemorialView extends MaterialCardView {
         titleView.setText(story.name);
 //        descriptionView.setText(story.storyText);
         contentsView.setText(story.storyText);
+    }
+
+    public boolean isUnwritten(){
+        return isUnwritten;
+    }
+
+    public boolean isWritten(){
+        return !isUnwritten;
     }
 
     @Override

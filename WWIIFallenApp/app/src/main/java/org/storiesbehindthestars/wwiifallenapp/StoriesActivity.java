@@ -18,6 +18,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import org.storiesbehindthestars.wwiifallenapp.components.MemorialView;
+import org.storiesbehindthestars.wwiifallenapp.components.ReturnButton;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 import org.storiesbehindthestars.wwiifallenapp.presenters.StoriesPresenter;
 
@@ -69,13 +70,19 @@ public class StoriesActivity extends AppCompatActivity implements StoriesPresent
             mainLayout.addView(emptyNote);
         }
 
-        MaterialButton returnButton = new MaterialButton(this, null, R.attr.borderlessButtonStyle);
-        returnButton.setText("Return To Home");
-        LinearLayout.LayoutParams buttonParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        buttonParams.gravity = (Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
-        returnButton.setLayoutParams(buttonParams);
-        
-        returnButton.setIconResource(R.drawable.ic_baseline_arrow_back_24);
+//        MaterialButton returnButton = new MaterialButton(this, null, R.attr.borderlessButtonStyle);
+//        returnButton.setText("Return To Home");
+//
+//        LinearLayout.LayoutParams buttonParams =  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        buttonParams.gravity = (Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+//        returnButton.setLayoutParams(buttonParams);
+//        returnButton.setIconResource(R.drawable.ic_baseline_arrow_back_24);
+//
+//        returnButton.setOnClickListener((view) ->{
+//            this.finish();
+//        });
+
+        ReturnButton returnButton = new ReturnButton(this);
         mainLayout.addView(returnButton);
 
     }

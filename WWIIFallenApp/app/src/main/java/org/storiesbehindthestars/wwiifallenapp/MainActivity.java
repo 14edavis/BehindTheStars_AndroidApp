@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 //                presenter.readImageText(bitmap); //TODO: Replace this, incorporate async task
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Unable to read image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No text found in image. Try entering the name by hand instead.", Toast.LENGTH_SHORT).show();
             }
             goToDirectEntry(resultOfTextToImage);
         }
@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(MainActivity.this, "Unable to read image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Unable to read image", Toast.LENGTH_LONG).show(); //sometimes causes an error - TODO
             }
 
 
@@ -391,7 +391,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
             setResultOfTextToImage(srcText);
         }
         else{   //if it's empty
-            setResultOfTextToImage("Error Reading Image");
+            setResultOfTextToImage("");
+            Toast.makeText(MainActivity.this, "Error reading image. Try entering the name by hand instead.", Toast.LENGTH_LONG).show();
         }
 
         mTessOCR.onDestroy();

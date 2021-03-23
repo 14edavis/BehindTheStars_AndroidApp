@@ -34,6 +34,8 @@ public class TessOCR {
         String datapath = DATA_PATH;
 
         mTess.init(datapath, language);
+//        mTess.setVariable(mTess.VAR_CHAR_BLACKLIST, "!@#$%^&*()-_+=<>?,./\\\"';:[]{}");
+        mTess.setVariable(mTess.VAR_CHAR_WHITELIST, "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890-'\" ");
         Log.d(TAG, "TessBaseAPI mTess created.");
     }
 

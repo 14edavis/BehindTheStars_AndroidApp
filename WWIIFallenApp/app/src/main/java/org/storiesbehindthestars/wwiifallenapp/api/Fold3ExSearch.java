@@ -59,6 +59,14 @@ public class Fold3ExSearch {
         for (int i=0; i<stories.length; i++){
             String name = (String) jsonStoryArrayList.get(i).get("label"); //TODO: Figure out why JSONObject removes spaces and fix it!
 //            name.replace(" ", "  ");
+            //ADDING SPACES...
+            for (int j = 1; j < name.length(); j++){
+                if ((int) name.charAt(j) > 65 && (int) name.charAt(j) < 90){
+                    name = name.substring(0, j) + " " + name.substring(j);
+                    j++;
+                }
+            }
+
 
             URL url = new URL((String) jsonStoryArrayList.get(i).get("url"));
             String story = readStoryFromWebpage(url); //TODO

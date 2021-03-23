@@ -15,6 +15,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import org.storiesbehindthestars.wwiifallenapp.components.MemorialView;
+import org.storiesbehindthestars.wwiifallenapp.components.ReturnButton;
 import org.storiesbehindthestars.wwiifallenapp.models.Story;
 import org.storiesbehindthestars.wwiifallenapp.presenters.StoryPresenter;
 
