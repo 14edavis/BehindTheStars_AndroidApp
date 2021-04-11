@@ -41,10 +41,11 @@ public class Fold3ExSearch {
     }
 
     public Story[] getStories() throws JSONException, IOException {
-        //loop through the JSON response to find all stories
+        //loop through the JSON response to find all stories, identify which ones are actually stories...
         ArrayList<JSONObject> jsonStoryArrayList = new ArrayList<>();
         JSONArray hitList = (JSONArray) jsonResponse.get("hits");
 
+        //TODO - identify memorials the proper way, because this doesn't work a lot of the time
         for (int i = 0; i<hitList.length(); i++){
             JSONObject hitUrlObj = (JSONObject) hitList.get(i);
             String hitUrl = (String) hitUrlObj.get("url");
@@ -53,12 +54,14 @@ public class Fold3ExSearch {
             }
         }
 
+
         //for each JSON story, convert it to a Story object
         Story[] stories = new Story[jsonStoryArrayList.size()];
 
+        //NAME
         for (int i=0; i<stories.length; i++){
-            String name = (String) jsonStoryArrayList.get(i).get("label"); //TODO: Figure out why JSONObject removes spaces and fix it!
-//            name.replace(" ", "  ");
+            String name = (String) jsonStoryArrayList.get(i).get("label");
+
             //ADDING SPACES...
             for (int j = 1; j < name.length(); j++){
                 if ((int) name.charAt(j) > 65 && (int) name.charAt(j) < 90){
@@ -68,9 +71,13 @@ public class Fold3ExSearch {
             }
 
 
+            //WEBPAGE
             URL url = new URL((String) jsonStoryArrayList.get(i).get("url"));
-            String story = readStoryFromWebpage(url); //TODO
 
+            //STORY
+            String story = readStoryFromWebpage(url);
+
+            //ID + PICTURES
             String pageID = jsonStoryArrayList.get(i).get("id").toString();
             String profilePic = (String) "https://img.fold3.com/img/reference/STORY_PAGE/"
                     +pageID

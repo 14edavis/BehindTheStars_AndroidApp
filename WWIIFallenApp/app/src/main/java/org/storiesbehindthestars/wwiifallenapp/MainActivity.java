@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         //add views to frameLayout
         frameLayout.addView(mainLayout);
-        frameLayout.addView(fab);
+//        frameLayout.addView(fab); //TODO: Make the fab actually display something
         frameLayout.addView(progressBar);
 
         //set view

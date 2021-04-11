@@ -1,0 +1,14 @@
+400,000+ Americans lost their lives in WWII. Each one had a story worth sharing.
+
+
+---
+
+
+During World War II a banner with a gold star was presented to the families of the fallen. The Stories Behind the Stars Initiative was created to organize one central digital location to collect the stories of the 400,000+ Americans who were killed during World War II.
+
+This is the initial smartphone app to digitally link these stories to war memorials and cemeteries so visitors can read the stories of the fallen.
+
+This national effort, researched, written, and financially supported by all those who want to see the fallen remembered, will ensure that future generations will be able to learn about each of the Americans who paid the price for the freedoms we take for granted every day.
+
+ABOUT THE APP
+This app was developed as a open source project in collaboration with Fold3.  We hope to continue developing and improving the app to make these stories as accessible as possible. See more at: https://github.com/14edavis/BehindTheStars_AndroidApp
