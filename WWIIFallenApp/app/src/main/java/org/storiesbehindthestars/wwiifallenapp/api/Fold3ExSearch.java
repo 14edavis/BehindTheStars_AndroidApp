@@ -16,13 +16,11 @@ import java.util.Scanner;
 public class Fold3ExSearch {
 
     private JSONObject jsonResponse;
-    private String baseSearch = "https://www.fold3.com/ex-search?keywords=";
-    private String endSearch = "&military.conflict=World+War+II&general.title.content.doc-type=STORY_PAGE:Memorial&";//key=";
-
-
+    private String baseSearch = "https://www.fold3.com/ex-search?resultTypes=memorials&keywords=www.storiesbehindthestars.org,";
+    private String endSearch = "&apiKey=PLACEHOLDER"; //todo: insert API Key
 
     public Fold3ExSearch(String textForSearch) throws IOException, JSONException {
-        String convertedTextForSearch = textForSearch.replace(" ", "+");
+        String convertedTextForSearch = textForSearch.replace(" ", ",");
 
         URL url = new URL(baseSearch + convertedTextForSearch+ endSearch); //+ apiKey);
         Scanner sc = new Scanner(url.openStream());
