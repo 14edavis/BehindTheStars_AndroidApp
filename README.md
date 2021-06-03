@@ -1,4 +1,4 @@
-#Updates
+## Updates
 
 UPDATE 3 June 2021: App Streamlined for Accelerated Release Date
 
