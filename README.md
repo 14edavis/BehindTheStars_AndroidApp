@@ -1,3 +1,14 @@
+#Updates
+
+UPDATE 3 June 2021: App Streamlined for Accelerated Release Date
+
+So that the app can be released sooner, the image recognition options have been removed from the home screen with plans to revisit these features after the app is released. The current home screen now only has the option to enter a name:
+
+![Streamlined Home Screen](screenshots_v1/StreamlinedHomeScreen.jpg)
+ 
+Next week we will be starting UX and graphic design for the app. Time to get it polished up!
+
+
 UPDATE 16 May 2021: Internal Testing Started!
 
 The api connection is fully functioning and internal testing has started. Finalizing the api connection introduced some bugs with searching from a text-to-image. These will be fixed shortly.
