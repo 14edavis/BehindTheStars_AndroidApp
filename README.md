@@ -4,7 +4,7 @@ UPDATE 3 June 2021: App Streamlined for Accelerated Release Date
 
 So that the app can be released sooner, the image recognition options have been removed from the home screen with plans to revisit these features after the app is released. The current home screen now only has the option to enter a name:
 
-![Streamlined Home Screen](screenshots_v1/StreamlinedHomeScreen.jpg)
+![Streamlined Home Screen](screenshots_v1/StreamlinedHomeScreen.JPG)
  
 Next week we will be starting UX and graphic design for the app. Time to get it polished up!
 
@@ -12,7 +12,6 @@ Next week we will be starting UX and graphic design for the app. Time to get it 
 UPDATE 16 May 2021: Internal Testing Started!
 
 The api connection is fully functioning and internal testing has started. Finalizing the api connection introduced some bugs with searching from a text-to-image. These will be fixed shortly.
-
 
 # Stories Behind The Stars - Android App
 Development for the Android mobile app for the Stories Behind The Stars project, a non-profit initiative that aims to record and share stories for each of the 400,000 American fallen from WWII. This mobile app will allow visitors at graves and memorials to scan the name of a fallen solider and read their story. More info at: https://www.storiesbehindthestars.org/
