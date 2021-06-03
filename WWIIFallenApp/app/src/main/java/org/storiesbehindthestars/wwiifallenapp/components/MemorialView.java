@@ -195,8 +195,15 @@ public class MemorialView extends MaterialCardView {
         return !isUnwritten;
     }
 
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
+//    @Override
+//    public void setOnClickListener(@Nullable OnClickListener l) {
+//        viewButton.setOnClickListener(l);
+//    }
+
+
+
+    public void setAllOnClickListener(@Nullable OnClickListener l){
+        this.setOnClickListener(l);
         viewButton.setOnClickListener(l);
     }
 
@@ -204,6 +211,10 @@ public class MemorialView extends MaterialCardView {
         if (fab != null) {
             fab.setOnClickListener(l);
         }
+    }
+
+    public void setViewButtonOnClickListener(@Nullable OnClickListener l){
+        viewButton.setOnClickListener(l);
     }
 
 

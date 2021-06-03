@@ -92,7 +92,7 @@ public class StoriesActivity extends AppCompatActivity implements StoriesPresent
         for (int i = 0; i < stories.length; i++){
             MemorialView memorialView = new MemorialView(this, stories[i], false);
             int storyIndex = i;
-            memorialView.setOnClickListener((view)->{
+            memorialView.setAllOnClickListener((view)->{
                 presenter.handleStoryClicked(storyIndex);
 
 //                Intent intent = new Intent(this, StoryActivity.class);

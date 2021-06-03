@@ -157,13 +157,23 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         mainLayout.addView(textView);
 
-        mainLayout.addView(scanButton);
 
-        LinearLayout subLayout = new LinearLayout(this);
-        subLayout.setLayoutParams(params);
-        subLayout.addView(selectImageButton);
-        subLayout.addView(enterDirectlyButton);
-        mainLayout.addView(subLayout);
+
+        //Original Button Layout -- Removed temporarily
+        //Right now we are going to only allow the user to search by entering a name, the image
+        //      recognition options (scanButton and selectImageButton) will return once we have them
+        //      working all the way.
+//        mainLayout.addView(scanButton);
+//
+//        LinearLayout subLayout = new LinearLayout(this);
+//        subLayout.setLayoutParams(params);
+//        subLayout.addView(selectImageButton);
+//        subLayout.addView(enterDirectlyButton);
+//        mainLayout.addView(subLayout);
+
+
+        //New layout with only enterDirectlyButton
+        mainLayout.addView(enterDirectlyButton);
 
 
         //add views to frameLayout

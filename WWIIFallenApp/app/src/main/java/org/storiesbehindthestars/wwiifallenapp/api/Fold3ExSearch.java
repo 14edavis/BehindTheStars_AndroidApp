@@ -17,7 +17,9 @@ public class Fold3ExSearch {
 
     private JSONObject jsonResponse;
     private String baseSearch = "https://www.fold3.com/ex-search?resultTypes=memorials&keywords=www.storiesbehindthestars.org,";
-    private String endSearch = "&apiKey=PLACEHOLDER"; //todo: insert API Key
+    private String endSearch = "&apiKey=x2P6Q2Pf9jT7xREfcAyBRjJX";//"&apiKey=PLACEHOLDER"; //todo: insert API Key
+
+
 
     public Fold3ExSearch(String textForSearch) throws IOException, JSONException {
         String convertedTextForSearch = textForSearch.replace(" ", ",");
@@ -43,7 +45,6 @@ public class Fold3ExSearch {
         ArrayList<JSONObject> jsonStoryArrayList = new ArrayList<>();
         JSONArray hitList = (JSONArray) jsonResponse.get("hits");
 
-        //TODO - identify memorials the proper way, because this doesn't work a lot of the time
         for (int i = 0; i<hitList.length(); i++){
             JSONObject hitUrlObj = (JSONObject) hitList.get(i);
             String hitUrl = (String) hitUrlObj.get("url");
@@ -51,7 +52,6 @@ public class Fold3ExSearch {
                 jsonStoryArrayList.add((JSONObject) hitList.get(i));
             }
         }
-
 
         //for each JSON story, convert it to a Story object
         Story[] stories = new Story[jsonStoryArrayList.size()];
@@ -75,14 +75,25 @@ public class Fold3ExSearch {
             //STORY
             String story = readStoryFromWebpage(url);
 
+
+            //TODO: This currently just scrapes the webpage to find the picture. Future updates should
+            //      integrate actually with Fold3's database to find the proper images
             //ID + PICTURES
             String pageID = jsonStoryArrayList.get(i).get("id").toString();
             String profilePic = (String) "https://img.fold3.com/img/reference/STORY_PAGE/"
                     +pageID
-                    +"?width=100&height=100";
-            String bannerPic = "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/"
-                    +pageID
-                    +"?";
+                    +"?width=100&height=100"
+                    +endSearch;
+
+            //TODO - connect to custom background. This is just a default.
+            //The image loading was failing because fold3 updated their background picture label
+            //  and the api was pulling a faulty url
+            String bannerPic = "https://img.fold3.com/img/memorialbg?width=500&id=91298175&amp;refresh=890";
+
+            //obsolete
+//                    "https://img.fold3.com/img/reference/BACKGROUND-IMAGE/"
+//                    +pageID
+//                    +"?";
 //https://img.fold3.com/img/reference/BACKGROUND-IMAGE/
             Story newStory = new Story(name, story, profilePic, bannerPic, url.toString());
 

@@ -56,7 +56,7 @@ public class StoryActivity extends AppCompatActivity implements StoryPresenter.M
         mainLayout.addView(scrollView);
         setContentView(mainLayout);
 
-        memorialView.setOnClickListener((view)->{
+        memorialView.setViewButtonOnClickListener((view)->{
             presenter.handleViewButtonClick();
         });
     }
