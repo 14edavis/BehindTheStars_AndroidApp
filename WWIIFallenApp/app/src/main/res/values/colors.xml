@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+<!--new color scheme colors-->
+    <color name="old_glory_blue">#0A3161</color>
+    <color name="old_glory_red">#B31942</color>
+    <color name="olive_drab">#6B8E23</color>
+    <color name="army_green">#4B5320</color>
+    <color name="gold">#D4BF91</color>
+    <color name="gray">#B2B4B3</color>
+
 </resources>

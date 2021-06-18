@@ -32,7 +32,7 @@ public class Fold3ExSearch {
         }
         String result = sb.toString(); //string of JSON results
 
-        jsonResponse = new JSONObject(result); //TODO: SEE IF THIS ACTUALLY WORKS...
+        jsonResponse = new JSONObject(result);
 
 //        JSONParser parser = new JSONParser();
 //        JSONObject json = (JSONObject) parser.parse(result);
@@ -119,12 +119,16 @@ public class Fold3ExSearch {
         System.out.println(result);
         //Removing the HTML tags
 
+//        final String startOfStoryText = "{\"metadata\":{\"id\":{\"contentType\":\"STORY\"";
+
         if (result.indexOf("StoryBlock-text\">") == -1){
+//        if (result.indexOf(startOfStoryText) == -1){
             return "";
         }
 
         result = result.substring(
                 result.indexOf("StoryBlock-text\">")+17
+
         );
         result = result.substring(0, result.indexOf("</div>"));
 
