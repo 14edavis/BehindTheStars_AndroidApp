@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         });
 
         MaterialButton enterDirectlyButton = new MaterialButton(this, null, R.attr.materialButtonOutlinedStyle);
-        enterDirectlyButton.setText("Enter Name");
+        enterDirectlyButton.setText("Enter A Name");
         enterDirectlyButton.setIconResource(R.drawable.ic_baseline_edit_24);
         enterDirectlyButton.setLayoutParams(params);
         enterDirectlyButton.setOnClickListener((view) ->{

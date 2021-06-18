@@ -41,11 +41,11 @@ public class DirectEntryActivity extends AppCompatActivity implements DirectEntr
 
         MaterialTextView promptTextView = new MaterialTextView(this);
         input = new TextInputEditText(this);
-        input.setLines(7);
-        input.setGravity(Gravity.START);
+//        input.setLines(7);
+        input.setGravity(Gravity.CENTER_HORIZONTAL);
 
         MaterialButton okButton = new MaterialButton(this);
-        okButton.setText("Find Memorial");
+        okButton.setText("Search");
         okButton.setOnClickListener((view)->{
             presenter.handleOkButtonPressed(input.getText().toString());
         });
@@ -59,7 +59,7 @@ public class DirectEntryActivity extends AppCompatActivity implements DirectEntr
 
         String text = getIntent().getStringExtra("imageText");
         if (text.equals("")){ //This is for direct entry
-            titleTextView.setText("Enter Text From Memorial");
+            titleTextView.setText("Enter A Name");
         }
         else{
             titleTextView.setText("Is This Correct?");

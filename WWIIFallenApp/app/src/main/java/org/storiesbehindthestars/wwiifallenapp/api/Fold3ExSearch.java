@@ -103,6 +103,7 @@ public class Fold3ExSearch {
         return stories;
     }
 
+    //TODO: Update readStoryFromWebpage so that it connects directly to the database and is not dependent on the website HTML
     public String readStoryFromWebpage(URL url) throws IOException {
         //Instantiating the URL class
 //        URL url = new URL("http://www.something.com/");
