@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
 
         //image
         AppCompatImageView imageView = new AppCompatImageView(this);
-        imageView.setImageResource(R.drawable.sbts_fbpic);
+        imageView.setImageResource(R.drawable.sbts_starwall);
 
         //text
         MaterialTextView textView = new MaterialTextView(this, null, R.attr.textAppearanceHeadline5);
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.MVP
         setContentView(frameLayout);
 
         //TODO:tidy up...
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED); //todo: PUT WHERE THIS MAKES MORE SENSE
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUESTED); //for storing bookmarked items and using the image to text AI todo: implement these features fully
 
         mTessOCR = new TessOCR(this, "eng");
 

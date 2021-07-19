@@ -180,8 +180,20 @@ public class Fold3ExSearch {
     }
 
 
-    String translateAscii(String withAscii){
-        return withAscii.replace("&#x27;", "'");
+    String translateAscii(String storyText){
+
+        for(int i = 21; i < 30; i++){
+            String ascii = "&#x"+i+";"; //&#x21 = ascii 33
+            String replacement = Character.toString( (char) (i+(33-21)));
+//            System.out.println(ascii + " " + replacement);
+
+            storyText = storyText.replace(ascii, replacement);
+//            System.out.println(storyText);
+        }
+
+        return storyText;
+
+//        return storyText.replace("&#x27;", "'");
     }
 
 }

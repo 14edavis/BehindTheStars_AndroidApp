@@ -2,11 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.storiesbehindthestars.wwiifallenapp">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
+<!--    for Geolocation features
+todo: restore this permission when this feature is fully implemented-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
+
+<!--for using Fold3 API-->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+<!--    for TessOCR AI
+todo: restore these permissions when this feature is fully implemented-->
+<!--    <uses-permission android:name="android.permission.CAMERA" />-->
+<!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+<!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
+
+<!--    Thought we needed this one, but looks like we probably won't-->
 <!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>-->
 
 
