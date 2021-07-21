@@ -21,9 +21,9 @@ todo: restore these permissions when this feature is fully implemented-->
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_sbts"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_sbts"
         android:supportsRtl="true"
         android:theme="@style/Theme.WWIIFallenApp">
         <provider
