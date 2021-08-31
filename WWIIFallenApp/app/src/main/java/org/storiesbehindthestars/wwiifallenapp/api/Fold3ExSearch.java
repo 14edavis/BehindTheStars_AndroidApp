@@ -26,23 +26,18 @@ public class Fold3ExSearch {
     private String endSearch = "&apiKey=x2P6Q2Pf9jT7xREfcAyBRjJX";//"&apiKey=PLACEHOLDER"; //todo: insert API Key
     private String storybaseSearch = "https://www.fold3.com/partner-memorial?id=";
 
+    private String connectionErrorMessage = "Oops! Looks like we're having issues connecting to Fold3 database.";
+
     public Fold3ExSearch(String textForSearch) throws IOException, JSONException {
         String convertedTextForSearch = textForSearch.replace(" ", ",");
-
         URL url = new URL(baseSearch + convertedTextForSearch+ endSearch); //+ apiKey);
         Scanner sc = new Scanner(url.openStream());
         StringBuffer sb = new StringBuffer();
         while(sc.hasNext()) {
-            sb.append(sc.next());
+            sb.append(sc.next() + " ");
         }
         String result = sb.toString(); //string of JSON results
-
         jsonResponse = new JSONObject(result);
-
-//        JSONParser parser = new JSONParser();
-//        JSONObject json = (JSONObject) parser.parse(result);
-//
-//        return json;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -50,7 +45,6 @@ public class Fold3ExSearch {
         //loop through the JSON response to find all stories, identify which ones are actually stories...
         ArrayList<JSONObject> jsonStoryArrayList = new ArrayList<>();
         JSONArray memorialList = (JSONArray) jsonResponse.get("hits");
-
         for (int i = 0; i<memorialList.length(); i++){
             JSONObject hitUrlObj = (JSONObject) memorialList.get(i);
             String hitUrl = (String) hitUrlObj.get("url");
@@ -61,19 +55,9 @@ public class Fold3ExSearch {
 
         //for each JSON story, convert it to a Story object
         Story[] stories = new Story[jsonStoryArrayList.size()];
-
         //NAME
         for (int i=0; i<stories.length; i++){
             String name = (String) jsonStoryArrayList.get(i).get("label");
-
-            //ADDING SPACES...
-            for (int j = 1; j < name.length(); j++){
-                if ((int) name.charAt(j) > 65 && (int) name.charAt(j) < 90){
-                    name = name.substring(0, j) + " " + name.substring(j);
-                    j++;
-                }
-            }
-
             //WEBPAGE
             URL url = new URL((String) jsonStoryArrayList.get(i).get("url"));
 
@@ -100,7 +84,6 @@ public class Fold3ExSearch {
                 story = "Something went wrong with retrieving this story.";
             }
 
-
             //TODO - connect to custom background. This is just a default.
             //The image loading was failing because fold3 updated their background picture label
             //  and the api was pulling a faulty url
@@ -122,19 +105,20 @@ public class Fold3ExSearch {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public String getStory(String pageID) throws JSONException, IOException {
         URL url = new URL(storybaseSearch + pageID);
+//        url = new URL("https://www.fold3.com/partner-memorial?id=636366796");
         Scanner sc = new Scanner(url.openStream());
         StringBuffer sb = new StringBuffer();
         while(sc.hasNext()) {
-            sb.append(sc.next());
+            sb.append(sc.next()+" ");
         }
         String result = sb.toString(); //string of JSON results
         JSONObject jsonStoryResponse = new JSONObject(result); //create object
-        JSONArray storiesJSON = new JSONArray(jsonStoryResponse.get("stories")); //get the stories
-        JSONObject storyJSON = new JSONObject((String) storiesJSON.get(0)); //gets the first story
-        String storyText = (String) storyJSON.get("story"); //get the story's text
+        JSONArray storiesJSON = (JSONArray) jsonStoryResponse.get("stories"); //get the stories
+        JSONObject storyJSON = (JSONObject) storiesJSON.get(0); //gets the first story
+        String storyText = (String) storyJSON.get("content"); //get the story's text
         storyText = parseOutHTML(storyText);
         storyText = translateAscii(storyText);
-        return result;
+        return storyText;
     }
 
     public String readStoryFromWebpage(URL url) throws IOException {
@@ -170,7 +154,6 @@ public class Fold3ExSearch {
         return result;
     }
 
-
     public String parseOutHTML(String stringWithHTML){
         StringBuilder sb = new StringBuilder();
         while (stringWithHTML.contains("<") ){
@@ -195,7 +178,6 @@ public class Fold3ExSearch {
         }
         return sb.toString();
     }
-
 
     String translateAscii(String storyText){
         for(int i = 21; i < 30; i++){
