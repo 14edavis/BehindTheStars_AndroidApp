@@ -71,17 +71,27 @@ public class Fold3ExSearch {
                     +endSearch;
             //STORY
 //                        String story = readStoryFromWebpage(url);
-            String story = "null";
+            String story = ""; //empty
             try{
                 story = getStory(pageID);}
             catch(IOException e){
-                story = "Unable to connect to Fold3.";
+                try {
+                    story = backupStoryReader(url);
+                }
+                catch (Exception x){
+                    System.out.println(x);
+                }
             }
             catch(JSONException e){
-                story = "JSON Exception Occurred";
+                try {
+                    story = backupStoryReader(url);
+                }
+                catch (Exception x){
+                    System.out.println(x);
+                }
             }
             catch(Exception e){
-                story = "Something went wrong with retrieving this story.";
+                story = connectionErrorMessage;
             }
 
             //TODO - connect to custom background. This is just a default.
@@ -121,36 +131,35 @@ public class Fold3ExSearch {
         return storyText;
     }
 
-    public String readStoryFromWebpage(URL url) throws IOException {
-        //Instantiating the URL class
-//        URL url = new URL("http://www.something.com/");
-        //Retrieving the contents of the specified page
+    public String backupStoryReader(URL url) throws IOException {
+        String storyStartTag = "\"text\":\"[{\\\"type\\\":\\\"text\\\",\\\"text\\\":";
+        String storyEndTag = "\"}]\",";
         Scanner sc = new Scanner(url.openStream());
-        //Instantiating the StringBuffer class to hold the result
         StringBuffer sb = new StringBuffer();
         while(sc.hasNext()) {
             sb.append(sc.next()+" ");
-            //System.out.println(sc.next());
         }
         //Retrieving the String from the String Buffer object
         String result = sb.toString();
-        System.out.println(result);
+//        System.out.println(result);
         //Removing the HTML tags
 //        final String startOfStoryText = "{\"metadata\":{\"id\":{\"contentType\":\"STORY\"";
-        if (result.indexOf("StoryBlock-text\">") == -1){
+        if (result.indexOf(storyStartTag) == -1){
 //        if (result.indexOf(startOfStoryText) == -1){
             return "";
         }
-        result = result.substring(
-                result.indexOf("StoryBlock-text\">")+17
-
-        );
-        result = result.substring(0, result.indexOf("</div>"));
-//        result = result.replaceAll("<[^>]*>", "");
-        System.out.println("Contents of the web page: "+result);
-
-        result = parseOutHTML(result);
+        result = result.substring(result.indexOf(storyStartTag) + storyStartTag.length()+2);
+        result = result.substring(0, result.indexOf(storyEndTag));
+//        System.out.println("Contents of the web page: "+result);
+//        result = parseOutHTML(result); //Fold3 reformatted how they do stories, so this isn't useful anymore
+        result = parseOutStringTags(result);
         result = translateAscii(result);
+        return result;
+    }
+
+    public String parseOutStringTags(String stringWithTags){
+        String result = stringWithTags.replaceAll("\\\\n", "\n");
+//        result = result.replaceAll("\\", "");
         return result;
     }
 

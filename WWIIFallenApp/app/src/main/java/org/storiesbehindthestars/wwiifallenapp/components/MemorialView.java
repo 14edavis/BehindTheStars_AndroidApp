@@ -51,6 +51,7 @@ public class MemorialView extends MaterialCardView {
     private boolean showFullPost = false;
     private boolean isUnwritten = false;
 
+    private String emptyStoryMessage = "Sorry, we can't find this story. Try visiting the online memorial instead."; //TODO: add this to resource String file instead
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public MemorialView(Activity context, Story story) {
@@ -115,7 +116,7 @@ public class MemorialView extends MaterialCardView {
         if (story.storyText.equals("")){ //if there's no story...
             isUnwritten = true;
             contentsView =  new MaterialTextView(context, null, R.attr.textAppearanceBody2);
-            contentsView.setText("No one has written this story yet.");
+            contentsView.setText(emptyStoryMessage);
         }
 
         body.addView(contentsView);
